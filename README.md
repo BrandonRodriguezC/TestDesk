@@ -82,7 +82,7 @@ Actualmente las pruebas más vitales para la ejecución son Condicional.td y tab
 
 ----
 
-## Creditos and referencias 
+## Creditos y referencias 
 
 1. Giovanni Fajardo (co-autor)
 2. Brandon Rodriguez (autor)
