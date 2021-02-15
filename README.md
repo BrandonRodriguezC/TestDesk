@@ -88,6 +88,6 @@ Actualmente las pruebas más vitales para la ejecución son Condicional.td y tab
 2. Brandon Rodriguez (autor)
 3. Documentacion:
     - ALFONSECA MORENO, Manuel et al. Compiladores e intérpretes: teoría y práctica. Madrid: PEARSON PRENTICE HALL, 2006. 376p. ISBN 84-205-5031-0
-    - UNIVERSITAT JAUME I. Procesadores de Lenguaje: Estructura de los compiladores e interpretes. En: Universidad Jaume I de Castellón [en línea]. (2010-2011). Disponible en: <http://repositori.uji.es/xmlui/bitstream/handle/10234/22656/II26_estructura_compiladores.pdf?sequence=1>. [citado en 1 de noviembre de 2020] 
+    - UNIVERSITAT JAUME I. Procesadores de Lenguaje: Estructura de los compiladores e interpretes. En: Universidad Jaume I de Castellón [en línea]. (2010-2011). Disponible en: <http://repositori.uji.es/xmlui/bitstream/handle/10234/22656/II26_estructura_compiladores.pdf?sequence=1>.
     - Stackoverflow :P
     - Multiples foros de desarrollo
