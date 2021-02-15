@@ -16,3 +16,5 @@ Version de prueba de TestDesk.
 * Lectura de consola en ejecucion
 * Escritura de consola en ejecucion
 * Colores en errores e información
+## Sets de pruebas de ejecución
+Actualmente las pruebas más vitales para la ejecución son Condicional.td y tablas-de-multiplicar.td (revisar en [carpeta](https://github.com/BrandonRodriguezC/TestDesk/tree/main/Pruebas))
