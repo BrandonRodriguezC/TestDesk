@@ -16,7 +16,7 @@ public class CodeArea extends StyledTextArea   {
 	
 	
 	private final static String keyword[] = { "repetir", "veces", "mientras que", "si ", "sino"};
-	private final static String tipoDeDato[] = { "entero", "decimal", "logico", "texto" };
+	private final static String tipoDeDato[] = { "entero", "real", "logico", "texto" };
 	private final static String BRACE_PATTERN = "\\(|\\)\n[\t]*\\{|\\) veces\n[\t]*\\{";
 	private final static String ASIGNACION = "\\=";
 	private final static String CIERRE = "\\;";

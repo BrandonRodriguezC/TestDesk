@@ -81,19 +81,16 @@ public class Ejecutor implements Evaluador, Posfijo{
 				indiceDeInstruccion= actual.salto-1;
 			}else {
 				if (actual.tipo.contains("Declaracion")) {
-					
 					String declaracion[] = actual.instruccion.split("=");
 					String primeraParte[] = declaracion[0].trim().replaceAll(" +", " ").split(" ");
 					declaracion[1]=declaracion[1].trim().replaceAll(" +", " ").replace(";", "");
 					declaracion(Character.toUpperCase(primeraParte[0].charAt(0))+ "",primeraParte[1],declaracion[1] );
-					info+=("+ L:"+(numeroDeLinea)+"~ Se declara la variable "+ primeraParte[1]+ " : "+ declaracion[1]+ "\n");
 					indiceDeInstruccion++;
 				}else if(actual.tipo.equals("Asignacion")) {
 					String declaracion[]= actual.instruccion.split("=");
 					declaracion[0]=declaracion[0].trim().replaceAll(" +", " ");
 					declaracion[1]=declaracion[1].trim().replaceAll(" +", " ").replace(";", "");
 					asignacion(declaracion[0],declaracion[1]);
-					info+=("+ L:"+(numeroDeLinea)+"~ Se declara la variable "+ declaracion[0]+ " : "+ declaracion[1]+ "\n");
 					indiceDeInstruccion++;
 				}else if(actual.tipo.contains("condicional")) {
 					indiceDeInstruccion= evaluarCondicion(actual.instruccion)? indiceDeInstruccion+1: actual.salto-1;
@@ -126,6 +123,9 @@ public class Ejecutor implements Evaluador, Posfijo{
 		if(tipo.equals(resultado.tipo)) {
 			ts.put(ts.hash(identificador), resultado);
 			info+=("+ L:"+(numeroDeLinea)+"~ Se declara la variable "+ identificador+ " : "+ resultado.valor+ "\n");
+		}else if (tipo.equals("R") && resultado.tipo.equals("E")){
+			ts.put(ts.hash(identificador), resultado);
+			info+=("+ L:"+(numeroDeLinea)+"~ Se declara la variable "+ identificador+ " : "+ resultado.valor+ "\n");
 		}
 		ctrl.añadirCambioEnVariable(identificador, resultado.valor, numeroDeLinea);
 	}
@@ -153,7 +153,7 @@ public class Ejecutor implements Evaluador, Posfijo{
 		
 		Variable resultado = Evaluador.evaluar(Posfijo.postfija(Posfijo.separar(expresion)),ts);
 		info+=("? L:"+(numeroDeLinea)+"~ La expresion tuvo resultado "+ resultado.valor+ "\n");
-		if(resultado.getValor().equals("true")) {
+		if(resultado.getValor().equals("verdadero")) {
 			return true;
 		}else {
 			return false;

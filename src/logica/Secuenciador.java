@@ -64,7 +64,7 @@ public class Secuenciador {
 				stack.push(close);
 				count++;
 			} else if (line.contains(";")) {
-				if(line.contains("entero")||line.contains("decimal")||line.contains("texto")||line.contains("logico")) {
+				if(line.contains("entero")||line.contains("real")||line.contains("texto")||line.contains("logico")) {
 					NodoSecuenciador node = new NodoSecuenciador(count,line, "Declaracion", i);
 					list.add(node);
 					count++;

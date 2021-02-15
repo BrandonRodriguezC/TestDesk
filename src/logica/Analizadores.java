@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
 
 public class Analizadores {
 	private static final String ENTERO = "[0-9]+";
-	private static final String DECIMAL = "[0-9]+\\.[0-9]+";
-	private static final String LOGICO = "true|false";
+	private static final String REAL = "[0-9]+\\.[0-9]+";
+	private static final String LOGICO = "verdadero|falso";
 	private static final String TEXTO = "\"([^\"\\\\]|\\\\.)*\"";
 	//private static final String TEXTO ="\".*\"";
 	private static final String PARENTESIS = "\\(|\\)";
@@ -27,7 +27,7 @@ public class Analizadores {
 
 	private Pattern PATRON = Pattern.compile(
 			   "(?<LOGICO>" + LOGICO + ")" 
-			+ "|(?<DECIMAL>" + DECIMAL + ")"
+			+ "|(?<REAL>" + REAL + ")"
 			+ "|(?<ENTERO>" + ENTERO + ")" 
 			+ "|(?<IDENTIFICADOR>" + IDENTIFICADOR + ")" 
 			+ "|(?<TEXTO>" + TEXTO + ")"
@@ -52,11 +52,13 @@ public class Analizadores {
 		}
 		if (compuesta) {
 			String rta = evaluar(pf);
-			if (!rta.equals("R")) {
+			if (!rta.equals("X")) {
 				errores.add("--- Se espera el tipo de dato: " + tipoDeVariable +" | Tipo generado: " + rta);
 				if (rta.equals(tipoDeVariable) ) {
 					return true;
-				} else {
+				} else if (tipoDeVariable.equals("R") && rta.equals("E")){
+					return true;
+				}else {
 					errores.add("ERROR: EL RESULTADO DE LA EXPRESION NO COINCIDE \n CON EL TIPO DE VARIABLE ");
 					return false;
 				}
@@ -79,7 +81,7 @@ public class Analizadores {
 		while (comparador.find()) {
 			
 			String tipoDeDato = comparador.group("ENTERO") != null ? "T-ENTERO"
-					: comparador.group("DECIMAL") != null ? "T-DECIMAL"
+					: comparador.group("REAL") != null ? "T-REAL"
 					: comparador.group("LOGICO") != null ? "T-LOGICO"
 					: comparador.group("TEXTO") != null ? "T-TEXTO"
 					: comparador.group("IDENTIFICADOR") != null ? "IDENTIFICADOR"
@@ -285,13 +287,13 @@ public class Analizadores {
 		String vec= "R";
 		
 		while (comparador.find()) {
-			tipoDeDato = comparador.group("DECIMAL") != null ? "D"
+			tipoDeDato = comparador.group("REAL") != null ? "R"
 						: comparador.group("ENTERO") != null ? "E"
 						: comparador.group("LOGICO") != null ? "L"
 						: comparador.group("TEXTO") != null ?  "T"
 						: comparador.group("IDENTIFICADOR") != null ? "I" 
 						: comparador.group("OPERADOR") != null ? "O"      
-						: comparador.group("ESPACIO") != null ? "S" : "R"; 
+						: comparador.group("ESPACIO") != null ? "S" : "X"; 
 			if(!tipoDeDato.equals("S")) {
 				if (!tipoDeDato.equals("O")) {
 					if (tipoDeDato.equals("I")) {
@@ -309,7 +311,7 @@ public class Analizadores {
 					lista.pop();
 					//errores.add(operando1.getValor() + " " + comparador.group() + " " + operando2.getValor());
 					String resultado = operar( operando1Tipo, comparador.group(), operando2Tipo);
-					if (resultado.equals("R")) {
+					if (resultado.equals("X")) {
 						return vec;
 					}
 					lista.push(resultado);
@@ -329,22 +331,22 @@ public class Analizadores {
 	public String operar( String tipo1, String operador,  String tipo2) {
 		
 		/************************ OPERANDO *************************************/
-		String vec = "R";
-		if (tipo1.equals("D") && tipo2.equals("E") ) {
+		String vec = "X";
+		if (tipo1.equals("R") && tipo2.equals("E") ) {
 			if (operador.equals("^")) {
-				vec = "D";
+				vec = "R";
 				return vec;
 			} else if (operador.equals("/")) {
-				vec = "D";
+				vec = "R";
 				return vec;
 			} else if (operador.equals("*")) {
-				vec = "D";
+				vec = "R";
 				return vec;
 			} else if (operador.equals("+")) {
-				vec = "D";
+				vec = "R";
 				return vec;
 			} else if (operador.equals("-")) {
-				vec = "D";
+				vec = "R";
 				return vec;
 			} else if (operador.equals("%")) {
 				vec = "E";
@@ -369,21 +371,21 @@ public class Analizadores {
 				return vec;
 			}
 			/*************************************************************/
-		} else if (tipo1.equals("E") && tipo2.equals("D")) {
+		} else if (tipo1.equals("E") && tipo2.equals("R")) {
 			if (operador.equals("^")) {
-				vec = "D";
+				vec = "R";
 				return vec;
 			} else if (operador.equals("/")) {
-				vec = "D";
+				vec = "R";
 				return vec;
 			} else if (operador.equals("*")) {
-				vec = "D";
+				vec = "R";
 				return vec;
 			} else if (operador.equals("+")) {
-				vec = "D";
+				vec = "R";
 				return vec;
 			} else if (operador.equals("-")) {
-				vec = "D";
+				vec = "R";
 				return vec;
 			} else if (operador.equals("%")) {
 				vec = "E";
@@ -408,13 +410,13 @@ public class Analizadores {
 				return vec;
 			}
 			/*-***********************************************************-*/
-		} else if (tipo1.equals("D") && tipo2.equals("T")) {
+		} else if (tipo1.equals("R") && tipo2.equals("T")) {
 			if (operador.equals("+")) {
 				vec = "T";
 				return vec;
 			}
 			/*-***********************************************************-*/
-		} else if (tipo1.equals("T") && tipo2.equals("D")) {
+		} else if (tipo1.equals("T") && tipo2.equals("R")) {
 			if (operador.equals("+")) {
 				vec = "T";
 				return vec;
@@ -444,21 +446,21 @@ public class Analizadores {
 				return vec;
 			}
 			/*-***********************************************************-*/
-		} else if (tipo1.equals("D") && tipo2.equals("D")) {
+		} else if (tipo1.equals("R") && tipo2.equals("R")) {
 			if (operador.equals("^")) {
-				vec = "D";
+				vec = "R";
 				return vec;
 			} else if (operador.equals("/")) {
-				vec = "D";
+				vec = "R";
 				return vec;
 			} else if (operador.equals("*")) {
-				vec = "D";
+				vec = "R";
 				return vec;
 			} else if (operador.equals("+")) {
-				vec = "D";
+				vec = "R";
 				return vec;
 			} else if (operador.equals("-")) {
-				vec = "D";
+				vec = "R";
 				return vec;
 			} else if (operador.equals("%")) {
 				// VERIFICAR
@@ -553,7 +555,7 @@ public class Analizadores {
 
 		}
 		
-		vec = "R";
+		vec = "X";
 
 		return vec;
 	}
@@ -617,8 +619,10 @@ public class Analizadores {
 	public String encontrarTipoParaIdentificador(String identificador) {
 		if (tablaDeSimbolos.containsKey(hash(identificador))) {
 			return tablaDeSimbolos.get(hash(identificador)).getTipo();
+		}else {
+			errores.add("ERROR: NO SE ENCUENTRA EL IDENTIFICADOR "+identificador);
+			return "ERROR";
 		}
-		return "R";
 	}
 
 }

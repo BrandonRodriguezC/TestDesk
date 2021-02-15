@@ -39,9 +39,7 @@ public class Tablas extends TabPane {
 		}
 	}
 	
-	public void añadirCambioEnVariable(String nombre, String cambio, int numeroDeLinea) {
-		// EXPERIMENTAL ---------------------------------	
+	public void añadirCambioEnVariable(String nombre, String cambio, int numeroDeLinea) {	
 		automatica.cambio(nombre, cambio, numeroDeLinea);
-		//	automatica.filasNuevasYCambio(nombre, cambio);
 	}
 }

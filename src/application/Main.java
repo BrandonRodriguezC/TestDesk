@@ -32,6 +32,7 @@ public class Main extends Application  implements GestorDeArchivos{
 	@Override
 	public void start(Stage primaryStage) {
 		try {
+			
 			BorderPane root = new BorderPane();
 			scene = new Scene(root, 1200, 600);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());

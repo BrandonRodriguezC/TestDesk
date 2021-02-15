@@ -8,8 +8,8 @@ import java.util.regex.Pattern;
 public interface Evaluador {
 	
 	 static final String ENTERO = "[0-9]+";
-	 static final String DECIMAL = "[0-9]+\\.[0-9]+";
-	 static final String LOGICO = "true|false";
+	 static final String REAL = "[0-9]+\\.[0-9]+";
+	 static final String LOGICO = "verdadero|falso";
 	 static final String TEXTO = "\"([^\"\\\\]|\\\\.)*\"";
 	 static final String PARENTESIS = "\\(|\\)";
 	static final String OPERADOR = "\\^|\\/|\\*|\\+|\\-|\\%|\\=\\=|\\=!|\\>\\=|\\<\\=|\\<|\\>|\\&\\&|\\|\\|";
@@ -20,7 +20,7 @@ public interface Evaluador {
 
 	static final String IDENTIFICADOR = "[a-z]+([0-9]+)?";
 
-	 static Pattern PATRON = Pattern.compile("(?<LOGICO>" + LOGICO + ")" + "|(?<DECIMAL>" + DECIMAL + ")"
+	 static Pattern PATRON = Pattern.compile("(?<LOGICO>" + LOGICO + ")" + "|(?<REAL>" + REAL + ")"
 			+ "|(?<ENTERO>" + ENTERO + ")" + "|(?<IDENTIFICADOR>" + IDENTIFICADOR + ")" + "|(?<TEXTO>" + TEXTO + ")"
 			+ "|(?<PARENTESIS>" + PARENTESIS + ")" + "|(?<OPERADOR>" + OPERADOR + ")");
 
@@ -31,12 +31,12 @@ public interface Evaluador {
 		String tipoDeDato;
 		
 		while (comparador.find()) {
-			tipoDeDato = comparador.group("DECIMAL") != null ? "D"
+			tipoDeDato = comparador.group("REAL") != null ? "R"
 						: comparador.group("ENTERO") != null ? "E"
 						: comparador.group("LOGICO") != null ? "L"
 						: comparador.group("TEXTO") != null ?  "T"
 						: comparador.group("IDENTIFICADOR") != null ? "I"
-						: comparador.group("OPERADOR") != null ? "O" : "R";
+						: comparador.group("OPERADOR") != null ? "O" : "X";
 
 			if (!tipoDeDato.equals("O")) {
 				if (tipoDeDato.equals("I")) {
@@ -52,14 +52,14 @@ public interface Evaluador {
 				lista.pop();
 				Variable operando1 = lista.peek();
 				lista.pop();
-				//System.out.println("A operar: "+operando1.getValor() + " " + comparador.group() + " " + operando2.getValor());
+				System.out.println("A operar: ["+operando1.getValor() + "] " + comparador.group() + " [" + operando2.getValor()+"]");
 				String resultado[] = operar(operando1.getValor(), operando1.getTipo(), comparador.group(), operando2.getValor(), operando2.getTipo());
-				if (resultado[0].equals("R")) {
-					return (new Variable("R", "R", null));
+				if (resultado[0].equals("X")) {
+					return (new Variable("X", "X", null));
 				}
 				String valor = resultado[0];
 				String tipo = resultado[1];
-				//System.out.println("= " + valor + " " + tipo);
+				System.out.println("= " + valor + " " + tipo);
 				lista.push(new Variable(valor, tipo, null));
 			} else {
 				Variable a = lista.peek();
@@ -83,136 +83,194 @@ public interface Evaluador {
 
 		if (tipo1.equals("E")) {
 			operando1Entero = Integer.parseInt(operando1);
-		} else if (tipo1.equals("D")) {
+		} else if (tipo1.equals("R")) {
 			operando1Decimal = Double.parseDouble(operando1);
 		} else if (tipo1.equals("L")) {
-			operando1Logico = Boolean.parseBoolean(operando1);
+			if(operando1.equals("verdadero")) {
+				operando1Logico = true;
+			}else {
+				operando1Logico = false;
+			}
 		} else if (tipo1.equals("T")) {
 			operando1Texto = operando1;
 		}
 
 		if (tipo2.equals("E")) {
 			operando2Entero = Integer.parseInt(operando2);
-		} else if (tipo2.equals("D")) {
+		} else if (tipo2.equals("R")) {
 			operando2Decimal = Double.parseDouble(operando2);
 		} else if (tipo2.equals("L")) {
-			operando2Logico = Boolean.parseBoolean(operando2);
+			if(operando2.equals("verdadero")) {
+				operando2Logico = true;
+			}else {
+				operando2Logico = false;
+			}
 		} else if (tipo2.equals("T") ) {
 			operando2Texto = operando2;
 		}
 
 		/************************ OPERANDO *************************************/
 		String vec[] = new String[2];
-		if (tipo1.equals("D") && tipo2.equals("E")) {
+		if (tipo1.equals("R") && tipo2.equals("E")) {
 			if (operador.equals("^")) {
 				vec[0] = Math.pow(operando1Decimal, operando2Entero) + "";
-				vec[1] = "D";
+				vec[1] = "R";
 				return vec;
 			} else if (operador.equals("/")) {
 				vec[0] = (operando1Decimal / operando2Entero) + "";
-				vec[1] = "D";
+				vec[1] = "R";
 				return vec;
 			} else if (operador.equals("*")) {
 				vec[0] = (operando1Decimal * operando2Entero) + "";
-				vec[1] = "D";
+				vec[1] = "R";
 				return vec;
 			} else if (operador.equals("+")) {
 				vec[0] = (operando1Decimal + operando2Entero) + "";
-				vec[1] = "D";
+				vec[1] = "R";
 				return vec;
 			} else if (operador.equals("-")) {
 				vec[0] = (operando1Decimal - operando2Entero) + "";
-				vec[1] = "D";
+				vec[1] = "R";
 				return vec;
 			} else if (operador.equals("%")) {
 				vec[0] = (operando1Decimal % operando2Entero) + "";
 				vec[1] = "E";
 				return vec;
 			} else if (operador.equals("==")) {
-				vec[0] = (operando1Decimal == operando2Entero) + "";
+				if (operando1Decimal == operando2Entero) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals("=!")) {
-				vec[0] = (operando1Decimal != operando2Entero) + "";
+			/** REVISARRRRR =! POR != **/	
+				if (operando1Decimal != operando2Entero) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals(">")) {
-				vec[0] = (operando1Decimal > operando2Entero) + "";
+				if (operando1Decimal > operando2Entero) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals("<")) {
-				vec[0] = (operando1Decimal < operando2Entero) + "";
+				if (operando1Decimal < operando2Entero) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals("<=")) {
-				vec[0] = (operando1Decimal <= operando2Entero) + "";
+				if (operando1Decimal <= operando2Entero) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals(">=")) {
-				vec[0] = (operando1Decimal >= operando2Entero) + "";
+				if (operando1Decimal >= operando2Entero) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			}
 			/*************************************************************/
-		} else if (tipo1.equals("E") && tipo2.equals("D") ) {
+		} else if (tipo1.equals("E") && tipo2.equals("R") ) {
 			if (operador.equals("^")) {
 				vec[0] = Math.pow(operando1Entero, operando2Decimal) + "";
-				vec[1] = "D";
+				vec[1] = "R";
 				return vec;
 			} else if (operador.equals("/")) {
 				vec[0] = (operando1Entero / operando2Decimal) + "";
-				vec[1] = "D";
+				vec[1] = "R";
 				return vec;
 			} else if (operador.equals("*")) {
 				vec[0] = (operando1Entero * operando2Decimal) + "";
-				vec[1] = "D";
+				vec[1] = "R";
 				return vec;
 			} else if (operador.equals("+")) {
 				vec[0] = (operando1Entero + operando2Decimal) + "";
-				vec[1] = "D";
+				vec[1] = "R";
 				return vec;
 			} else if (operador.equals("-")) {
 				vec[0] = (operando1Entero - operando2Decimal) + "";
-				vec[1] = "D";
+				vec[1] = "R";
 				return vec;
 			} else if (operador.equals("%")) {
 				vec[0] = (operando1Entero % operando2Decimal) + "";
 				vec[1] = "E";
 				return vec;
 			} else if (operador.equals("==")) {
-				vec[0] = (operando1Entero == operando2Decimal) + "";
+				if (operando1Entero == operando2Decimal) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals("=!")) {
-				vec[0] = (operando1Entero != operando2Decimal) + "";
+				/** Revisar =! por != **/
+				if (operando1Entero != operando2Decimal) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals(">")) {
-				vec[0] = (operando1Entero > operando2Decimal) + "";
+				if (operando1Entero > operando2Decimal) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals("<")) {
-				vec[0] = (operando1Entero < operando2Decimal) + "";
+				if (operando1Entero < operando2Decimal) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals("<=")) {
-				vec[0] = (operando1Entero <= operando2Decimal) + "";
+				if (operando1Entero <= operando2Decimal) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals(">=")) {
-				vec[0] = (operando1Entero >= operando2Decimal) + "";
+				if (operando1Entero >= operando2Decimal) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			}
 			/*-***********************************************************-*/
-		} else if (tipo1.equals("D") && tipo2.equals("T") ) {
+		} else if (tipo1.equals("R") && tipo2.equals("T") ) {
 			if (operador.equals("+")) {
 				vec[0] = (operando1Decimal + operando2Texto) + "";
 				vec[1] = "T";
 				return vec;
 			}
 			/*-***********************************************************-*/
-		} else if (tipo1.equals("T") && tipo2.equals("D") ) {
+		} else if (tipo1.equals("T") && tipo2.equals("R") ) {
 			if (operador.equals("+")) {
 				vec[0] = (operando1Texto + operando2Decimal) + "";
 				vec[1] = "T";
@@ -247,26 +305,26 @@ public interface Evaluador {
 				return vec;
 			}
 			/*-***********************************************************-*/
-		} else if (tipo1.equals("D") && tipo2.equals("D") ) {
+		} else if (tipo1.equals("R") && tipo2.equals("R") ) {
 			if (operador.equals("^")) {
 				vec[0] = Math.pow(operando1Decimal, operando2Decimal) + "";
-				vec[1] = "D";
+				vec[1] = "R";
 				return vec;
 			} else if (operador.equals("/")) {
 				vec[0] = (operando1Decimal / operando2Decimal) + "";
-				vec[1] = "D";
+				vec[1] = "R";
 				return vec;
 			} else if (operador.equals("*")) {
 				vec[0] = (operando1Decimal * operando2Decimal) + "";
-				vec[1] = "D";
+				vec[1] = "R";
 				return vec;
 			} else if (operador.equals("+")) {
 				vec[0] = (operando1Decimal + operando2Decimal) + "";
-				vec[1] = "D";
+				vec[1] = "R";
 				return vec;
 			} else if (operador.equals("-")) {
 				vec[0] = (operando1Decimal - operando2Decimal) + "";
-				vec[1] = "D";
+				vec[1] = "R";
 				return vec;
 			} else if (operador.equals("%")) {
 				// VERIFICAR
@@ -275,27 +333,52 @@ public interface Evaluador {
 				return vec;
 				// VERIFICAR
 			} else if (operador.equals("==")) {
-				vec[0] = (operando1Decimal == operando2Decimal) + "";
+				if (operando1Decimal == operando2Decimal) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals("=!")) {
-				vec[0] = (operando1Decimal != operando2Decimal) + "";
+				/** REVISAR =!  POR != **/
+				if (operando1Decimal != operando2Decimal) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals(">")) {
-				vec[0] = (operando1Decimal > operando2Decimal) + "";
+				if (operando1Decimal > operando2Decimal) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals("<")) {
-				vec[0] = (operando1Decimal < operando2Decimal) + "";
+				if (operando1Decimal < operando2Decimal) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals("<=")) {
-				vec[0] = (operando1Decimal <= operando2Decimal) + "";
+				if (operando1Decimal <= operando2Decimal) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals(">=")) {
-				vec[0] = (operando1Decimal >= operando2Decimal) + "";
+				if (operando1Decimal >= operando2Decimal) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			}
@@ -306,11 +389,19 @@ public interface Evaluador {
 				vec[1] = "T";
 				return vec;
 			} else if (operador.equals("==")) {
-				vec[0] = (operando1Texto == operando2Texto) + "";
+				if (operando1Texto.equals(operando2Texto)) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals("=!")) {
-				vec[0] = (operando1Texto != operando2Texto) + "";
+				if (!operando1Texto.equals(operando2Texto)) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			}
@@ -341,53 +432,95 @@ public interface Evaluador {
 				vec[1] = "E";
 				return vec;
 			} else if (operador.equals("==")) {
-				vec[0] = (operando1Entero == operando2Entero) + "";
+				if (operando1Entero == operando2Entero) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals("=!")) {
-				vec[0] = (operando1Entero != operando2Entero) + "";
+				/** REVISAR =! POR != **/
+				if (operando1Entero != operando2Entero) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals(">")) {
-				vec[0] = (operando1Entero > operando2Entero) + "";
+				if (operando1Entero > operando2Entero) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals("<")) {
-				vec[0] = (operando1Entero < operando2Entero) + "";
+				if (operando1Entero < operando2Entero) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals("<=")) {
-				vec[0] = (operando1Entero <= operando2Entero) + "";
+				if (operando1Entero <= operando2Entero) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals(">=")) {
-				vec[0] = (operando1Entero >= operando2Entero) + "";
+				if (operando1Entero >= operando2Entero) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			}
 			/*-***********************************************************-*/
 		} else if (tipo1.equals("L") && tipo2.equals("L") ) {
 			if (operador.equals("==")) {
-				vec[0] = (operando1Logico == operando2Logico) + "";
+				System.out.println(operando1Logico+ " == "+ operando2Logico +" ("+(operando1Logico == operando2Logico)+ ")");
+				if (operando1Logico == operando2Logico) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals("=!")) {
-				vec[0] = (operando1Logico != operando2Logico) + "";
+				if (operando1Logico != operando2Logico) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals("&&")) {
-				vec[0] = (operando1Logico && operando2Logico) + "";
+				if (operando1Logico && operando2Logico) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			} else if (operador.equals("||")) {
-				vec[0] = (operando1Logico || operando2Logico) + "";
+				if (operando1Logico || operando2Logico) {
+					vec[0] = "verdadero";
+				}else {
+					vec[0] = "falso";
+				}
 				vec[1] = "L";
 				return vec;
 			}
 
 		}
-		vec[0] = "R";
-		vec[1] = "R";
+		vec[0] = "X";
+		vec[1] = "X";
 
 		return vec;
 	}

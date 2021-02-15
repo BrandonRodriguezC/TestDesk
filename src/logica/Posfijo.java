@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public interface Posfijo {
 	static final String ENTERO = "[0-9]+";
-	static final String DECIMAL = "[0-9]+\\.[0-9]+";
+	static final String REAL = "[0-9]+\\.[0-9]+";
 	static final String LOGICO = "true|false";
 	static final String TEXTO = "\"([^\"\\\\]|\\\\.)*\"";
 	static final String PARENTESIS = "\\(|\\)";
@@ -19,7 +19,7 @@ public interface Posfijo {
 
 	static final String IDENTIFICADOR = "[a-z]+[0-9]+|[a-z]+";
 
-	static Pattern PATRON = Pattern.compile("(?<LOGICO>" + LOGICO + ")" + "|(?<DECIMAL>" + DECIMAL + ")" + "|(?<ENTERO>"
+	static Pattern PATRON = Pattern.compile("(?<LOGICO>" + LOGICO + ")" + "|(?<REAL>" + REAL + ")" + "|(?<ENTERO>"
 			+ ENTERO + ")" + "|(?<IDENTIFICADOR>" + IDENTIFICADOR + ")" + "|(?<TEXTO>" + TEXTO + ")" + "|(?<PARENTESIS>"
 			+ PARENTESIS + ")" + "|(?<OPERADOR>" + OPERADOR + ")");
 
@@ -31,12 +31,12 @@ public interface Posfijo {
 		while (comparador.find()) {
 
 			String tipoDeDato = comparador.group("ENTERO") != null ? "T-ENTERO"
-					: comparador.group("DECIMAL") != null ? "T-DECIMAL"
-							: comparador.group("LOGICO") != null ? "T-LOGICO"
-									: comparador.group("TEXTO") != null ? "T-TEXTO"
-											: comparador.group("IDENTIFICADOR") != null ? "IDENTIFICADOR"
-													: comparador.group("PARENTESIS") != null ? "PARENTESIS"
-															: comparador.group("OPERADOR") != null ? "OPERADOR" : null;
+								: comparador.group("REAL") != null ? "T-REAL"
+								: comparador.group("LOGICO") != null ? "T-LOGICO"
+								: comparador.group("TEXTO") != null ? "T-TEXTO"
+								: comparador.group("IDENTIFICADOR") != null ? "IDENTIFICADOR"
+								: comparador.group("PARENTESIS") != null ? "PARENTESIS"
+								: comparador.group("OPERADOR") != null ? "OPERADOR" : null;
 
 			if (tipoDeDato.equals("PARENTESIS")) {
 				separado.add(comparador.group());
@@ -115,7 +115,7 @@ public interface Posfijo {
 		Matcher comparador = PATRON.matcher(identificador);
 		if (comparador.find()) {
 			String tipoDeDato = comparador.group("ENTERO") != null ? "T-ENTERO"
-					: comparador.group("DECIMAL") != null ? "T-DECIMAL"
+					: comparador.group("REAL") != null ? "T-REAL"
 					: comparador.group("LOGICO") != null ? "T-LOGICO"
 					: comparador.group("TEXTO") != null ? "T-TEXTO"
 					: comparador.group("IDENTIFICADOR") != null ? "IDENTIFICADOR"
@@ -309,12 +309,12 @@ public interface Posfijo {
 
 		int rta = (operador.matches("\\|\\|")) ? 1
 				: (operador.matches("\\&\\&")) ? 2
-						: (operador.matches("\\=\\=|\\=!|\\>|\\<|\\<\\=|\\>\\=")) ? 3
-								: (operador.matches("\\%")) ? 4
-										: (operador.matches("\\+|\\-")) ? 5
-												: (operador.matches("\\*|\\/")) ? 6
-														: (operador.matches("\\^")) ? 7
-																: (operador.matches("\\(|\\)")) ? 8 : 0;
+				: (operador.matches("\\=\\=|\\=!|\\>|\\<|\\<\\=|\\>\\=")) ? 3
+				: (operador.matches("\\%")) ? 4
+				: (operador.matches("\\+|\\-")) ? 5
+				: (operador.matches("\\*|\\/")) ? 6
+				: (operador.matches("\\^")) ? 7
+				: (operador.matches("\\(|\\)")) ? 8 : 0;
 		return rta;
 	}
 }

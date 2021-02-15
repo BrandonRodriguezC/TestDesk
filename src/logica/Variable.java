@@ -15,8 +15,8 @@ public class Variable {
 		}else if (nombre != null && valor == null) {
 			this.tipo = tipo;
 			valor = (tipo =="E") ? "1":
-				    (tipo =="D")? "1.0":
-					(tipo =="T")? "": "false";
+				    (tipo =="R")? "1.0":
+					(tipo =="T")? "": "falso";
 			this.nombre=nombre;
 		}
 	}

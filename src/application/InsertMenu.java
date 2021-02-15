@@ -31,7 +31,7 @@ public class InsertMenu extends javafx.scene.control.ContextMenu {
 	private final Menu condicionalCM = new Menu("Condicional");
 
 	private static final String ENTEROstatement = "entero       =      ;";
-	private static final String DECIMALstatement = "decimal       =       ;";
+	private static final String DECIMALstatement = "real       =       ;";
 	private static final String TEXTOstatement = "texto       =       ;";
 	private static final String LOGICOstatement = "logico       =       ;";
 	private static final String ASIGNACIONstatement = "       =       ;";

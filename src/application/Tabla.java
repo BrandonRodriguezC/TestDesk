@@ -40,8 +40,6 @@ public class Tabla extends ScrollPane{
 			contenido.add(stack, i, filas);
 			Objetos.add(stack);
 		}
-		//contenido=new GridPane();
-		
 		filas++;
 	}
 	
@@ -62,41 +60,15 @@ public class Tabla extends ScrollPane{
 		filas++;
 	}
 	
-	// EXPERIMENTAL ---------------------------------
 	
 	public void cambio (String nombre, String cambio, int linea) {
 		int columnaCambio = nombresVariables.indexOf(nombre);
 		StackPane stack = (StackPane) contenido.getChildren().get(linea*tamaño+ columnaCambio);
 		TextField tf= (TextField) stack.getChildren().get(1);
 		tf.setText(cambio);
-		
 	}
 	
-	public void filasNuevasYCambio(String nombre, String cambio) {
-		
-		// Se deprecia
-		if (false) {
-			int indiceCambio = nombresVariables.indexOf(nombre);
-			for (int i = 0; i < tamaño; i++) {
-				StackPane stack= new StackPane();
-				Label lbl;
-				if(indiceCambio==i) {
-					lbl = new Label(cambio);
-				}else {
-					lbl = new Label(); 
-				}
-				Rectangle rec = new Rectangle(400/tamaño,15);
-				rec.getStyleClass().add("rectangulo");
-				stack.getChildren().addAll(rec, lbl);
-				contenido.add(stack, i, filas);
-				Objetos.add(stack); 
-			}
-			filas++;
-		}else {
-			System.out.println("SE DEPRECIA");
-		}
-		
-	}
+	
 	
 	
 }
