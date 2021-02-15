@@ -1,0 +1,2 @@
+entero       =      ;
+entero       =      ;
