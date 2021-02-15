@@ -14,5 +14,5 @@ Version de prueba de TestDesk.
 - [X] Ejecucion paso a paso 
 ## Por hacer
 * Lectura de consola en ejecucion
-* Escritura de consola en ejecucion+
+* Escritura de consola en ejecucion
 * Colores en errores e información
