@@ -1,11 +1,13 @@
 package controlador;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
+import application.BarraSuperior;
 import application.Consolas;
 import application.EditorCodigo;
 import application.Tablas;
+import javafx.scene.control.Alert;
+import javafx.stage.StageStyle;
 import logica.Analizadores;
 import logica.Ejecutor;
 import logica.Secuenciador;
@@ -17,104 +19,190 @@ public class Controlador {
 	Tablas ts;
 	Analizadores as;
 	Ejecutor ej;
+	BarraSuperior bs;
 
 	public Controlador() {
 		ec = null;
-		cs= null;
+		cs = null;
 		ts = null;
+		bs = null;
 		as = new Analizadores();
 		sc = new Secuenciador(this);
-		ej= new Ejecutor(this);
+		ej = new Ejecutor(this);
 	}
 
 	public void añadirNuevaPestañaEC(String nombre) {
 		ec.nuevaPestaña(nombre);
 	}
-	
-	public int numeroPestañasEC(){
+
+	public int numeroPestañasEC() {
 		return ec.numeroPestañas();
 	}
-	
-	public void presentarErrores(String errores) {
-		if (errores.equals("as")) {
+
+	public void presentarErrores(ArrayList<String> errores, String origen) {
+		if (origen.equals("as")) {
 			cs.presentarErrores(as.presentarErrores());
-		}else {
+		} else {
 			cs.presentarErrores(errores);
-		}	
+		}
 	}
-	
+
 	public String tomarCodigo() {
 		return ec.tomarCodigo();
 	}
-	
+
 	public void ponerCodigo(String codigo) {
+		limpiarErrores();
 		ec.ponerCodigo(codigo);
+		presentarErrores(null, "as");
+		actualizarTablas();
 	}
-	/************************************************************/
-	public void secuenciar(String[] codigo, int numeroDeLineas) {
-		//System.out.println(Arrays.toString(codigo));
-		ej.setTS(as.getTablaDeSimbolos());
-		ts.actualizarColumnasTablas(as.getVariables());
-		ts.añadirFilas(numeroDeLineas);
-		ej.setInstrucciones(sc.secuenciar(codigo));
-		//ej.ejecutar(sc.secuenciar(codigo));
+
+	public void actualizarTablas() {
+		int numeroDeLineas = numeroDeLineas();
+		ts.ActualizarTabla(tomarIdentificadoresActuales(), numeroDeLineas);
+		cs.actualizarConsolaEntradas(numeroDeLineas);
+	}
+
+	public void secuenciar() {
+		if (ec.getError() ) {
+			alertar("Error", "Existe un error en tu algoritmo", "Tu codigo no compilará hasta que soluciones el error");
+		} else if( ej.estaCorriendo()) {
+			alertar("Información", "Información", "No puedes detener la ejecucion si se ejecuta en automatico");
+		} else {
+			if (ec.getEjecucion()) {
+				detener();
+			} else {
+				ec.setEjecucion(true);
+				bs.cambiarIconoEjecucion(true);
+				ec.actualizarEstilosEjecucion();
+				System.out.println(as.imprimirExpresionesPosfijas());
+				
+				ej.setInstrucciones(sc.secuenciar(this.tomarCodigo().replace("\t", "").split("\n"), as.getExpresionesPosfijas()));
+				ej.setTS(as.getTablaDeSimbolos());
+				actualizarTablas();
+			}
+		}
 	}
 	
+	public void detener() {
+		ec.setEjecucion(false);
+		bs.cambiarIconoEjecucion(false);
+		ec.actualizarEstilosEjecucion();
+	}
+
 	public void ejecutarSiguienteInstruccion() {
-		ej.ejecutarSiguienteInstruccion();
+		if (ec.getEjecucion()) {
+			ej.ejecutarSiguienteInstruccion();
+		} else {
+			alertar("Informacion", "Ejecucion", "Por favor pulsa el boton de secuenciar");
+		}
 	}
-	
+
+	public void alertar(String titulo, String cabecera, String contenido) {
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.initStyle(StageStyle.UTILITY);
+		alert.setTitle(titulo);
+		alert.setHeaderText(cabecera);
+		alert.setContentText(contenido);
+		alert.showAndWait();
+	}
+
 	public void añadirCambioEnVariable(String nombre, String valor, int numeroDeLinea) {
 		ts.añadirCambioEnVariable(nombre, valor, numeroDeLinea);
 	}
-	
-	/************************************************************/
-	
+
 	public ArrayList<String> tomarIdentificadoresActuales() {
 		return ec.tomarIdentificadores();
 	}
-	
-	public void actualizarColumnasTablas(ArrayList<String> identificadores, int numeroDeLineas) {
-		ts.actualizarColumnasTablas(identificadores);
-		ts.añadirFilas(numeroDeLineas);
-	}
-	
-	
+
 	public void limpiarErrores() {
 		as.inicializarListaDeErrores();
 	}
-	
+
 	public ArrayList<String> getTablaDeSimbolos() {
 		return as.getVariables();
 	}
-	
+
 	public String encontrarTipoParaIdentificador(String expresion) {
 		return as.encontrarTipoParaIdentificador(expresion);
 	}
-	
-	public boolean evaluar(boolean compuesta, boolean declaracion, String tipoDeVariable, String expresion, int linea) {
-		return as.evaluate( compuesta,  declaracion,  tipoDeVariable,  expresion,  linea);
+
+	public boolean evaluar(boolean compuesta, boolean declaracionAsignacion, String tipoDeVariable, String expresion,
+			int linea, boolean repetir, boolean escribir) {
+		return as.evaluate(compuesta, declaracionAsignacion, tipoDeVariable, expresion, linea, repetir, escribir);
 	}
-	
+
 	public void agregarVariable(String nombre, String tipo) {
 		as.añadirVariable(nombre, tipo);
 	}
-	
+
 	public void actualizarVariable(String nombre, String valor) {
 		as.actualizarVariable(nombre, valor);
 	}
-	
+
 	public int numeroDeLineas() {
 		return ec.numeroDeLineas();
 	}
-	
+
 	public void señalarLineaEnCodigo(int numeroDeLinea) {
 		ec.señalarLineaEnCodigo(numeroDeLinea);
 	}
+
+	public void actualizarRepetir(String numero, int linea) {
+		ec.actualizarRepetir(numero, linea);
+
+	}
+
+	public void escribirEnConsola(String expresion, int numeroDeLinea) {
+		cs.escribirEnConsola(expresion, numeroDeLinea);
+	}
+
+	public String leerLinea(int numeroDeLinea) {
+		return cs.leerLinea(numeroDeLinea);
+	}
+
+	public void compararTablas() {
+		ts.comparar();
+	}
+
+	public void limpiarTablas() {
+		ts.limpiar();
+		cs.limpiar();
+	}
+
+	public void analizadoresInformacion() {
+		as.informacion();
+	}
+
+	public void ejecutarAutomaticamente(int segundos) {
+		if (ec.getError()) {
+			alertar("Error", "Existe un error en tu algoritmo", "Tu codigo no compilará hasta que soluciones el error");
+		} else {
+			if (ec.getEjecucion()) {
+				ec.setEjecucion(false);
+				bs.cambiarIconoEjecucion(false);
+				ec.actualizarEstilosEjecucion();
+			} else {
+				ec.setEjecucion(true);
+				bs.cambiarIconoEjecucion(true);
+				ec.actualizarEstilosEjecucion();
+				ej.setInstrucciones(sc.secuenciar(this.tomarCodigo().replace("\t", "").split("\n"), as.getExpresionesPosfijas()));
+				ej.setTS(as.getTablaDeSimbolos());
+				actualizarTablas();
+				ej.ejecutarAutomaticamente();
+			}
+			
+		}
+		
+	}
 	
 	
-	/**------------------------------------------------- GETTER & SETTERS -------------------------------------------------------------**/
-	
+	/**
+	 * ------------------------------------------------- GETTER & SETTERS
+	 * -------------------------------------------------------------
+	 **/
+
 	public EditorCodigo getEC() {
 		return ec;
 	}
@@ -155,6 +243,12 @@ public class Controlador {
 		this.ej = ej;
 	}
 
-	
-	
+	public BarraSuperior getBs() {
+		return bs;
+	}
+
+	public void setBs(BarraSuperior bs) {
+		this.bs = bs;
+	}
+
 }

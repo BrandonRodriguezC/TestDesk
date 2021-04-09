@@ -7,27 +7,25 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public interface GestorDeArchivos {
+	
 	public static void EscribirArchivo(String Codigo, File ruta) throws IOException {
-
 		PrintWriter writer;
 		writer = new PrintWriter(ruta);
 		writer.println(Codigo);
 		writer.close();
-
 	}
 
 	public static String AbrirArchivo(File ruta) throws IOException {
 		String line;
-		String result = "";
+		StringBuilder sb = new StringBuilder();
 		try (BufferedReader reader = new BufferedReader(new FileReader(ruta))) {
-			while ((line = reader.readLine()) != null)
-				result += (line) + "\n";
-
+			while ((line = reader.readLine()) != null) {
+				sb.append(line).append("\n");
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		return result;
+		return sb.toString();
 	}
 
 }

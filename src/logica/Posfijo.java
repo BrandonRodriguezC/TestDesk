@@ -9,10 +9,12 @@ import java.util.regex.Pattern;
 public interface Posfijo {
 	static final String ENTERO = "[0-9]+";
 	static final String REAL = "[0-9]+\\.[0-9]+";
+	/** REVISAR OPERADOR LOGICO (VERDADERO - FALSO)*/
 	static final String LOGICO = "true|false";
 	static final String TEXTO = "\"([^\"\\\\]|\\\\.)*\"";
 	static final String PARENTESIS = "\\(|\\)";
-	static final String OPERADOR = "\\^|\\/|\\*|\\+|\\-|\\%|\\=\\=|\\=!|\\>\\=|\\<\\=|\\<|\\>|\\&\\&|\\|\\|";
+	/** REVISAR =! */
+	static final String OPERADOR = "\\^|\\/|\\*|\\+|\\-|\\%|\\=\\=|\\!\\=|\\>\\=|\\<\\=|\\<|\\>|\\&\\&|\\|\\|";
 
 	// private static final String COMENTARIO = "//[^\n]*" + "|" +
 	// "/\\*(.|\\R)*?\\*/";
@@ -56,6 +58,10 @@ public interface Posfijo {
 
 	
 	public static String postfija(String[] expresionVec) {
+
+/** MEJORA CON VECTORES **/
+//		int tamaño = String.join(" ", expresionVec).replace("(", "").replace(")", "").split(" ").length ;
+		
 		String resultado = "", subexpresion = "";
 		
 		int i = 0, izPa = 0, dePa = 0;
@@ -76,6 +82,7 @@ public interface Posfijo {
 				
 				subexpresion = subexpresion.substring(1, subexpresion.length() - 1);
 				resultado = resultado + " " + postfija(separar(subexpresion));
+				subexpresion="";
 				
 			} else if (esDato(expresionVec[i])) {
 				resultado = resultado + " " + expresionVec[i];
@@ -84,17 +91,23 @@ public interface Posfijo {
 				pila.push(expresionVec[i]);
 				i++;
 			} else {
+				//System.out.println(expresionVec[i]+"-"+jerarquia(expresionVec[i])+ " "+pila.peek()+"-"+ jerarquia(pila.peek()));
 				if (jerarquia(expresionVec[i]) < jerarquia(pila.peek())) {
 					resultado = resultado + " " + pila.peek();
 					pila.pop();
-				} else if (jerarquia(pila.peek()) == jerarquia(expresionVec[i])) {
-					while (!pila.empty()) {
-						resultado = resultado + " " + pila.peek();
-						pila.pop();
+				} else if (jerarquia(expresionVec[i]) == jerarquia(pila.peek())) {
+					while (!pila.empty() ) {
+						if(jerarquia(expresionVec[i]) <= jerarquia(pila.peek())) {
+							resultado = resultado + " " + pila.peek();
+							pila.pop();
+						}else {
+							break;
+						}
+						
 					}
 					pila.push(expresionVec[i]);
 					i++;
-				} else if (jerarquia(pila.peek()) < jerarquia(expresionVec[i])) {
+				} else if (jerarquia(expresionVec[i]) > jerarquia(pila.peek())) {
 					pila.push(expresionVec[i]);
 					i++;
 				}
@@ -106,7 +119,7 @@ public interface Posfijo {
 				pila.pop();
 			}
 		}
-		resultado = resultado.substring(1, resultado.length());
+		//resultado = resultado.substring(1, resultado.length());
 		return resultado;
 	}
 	
@@ -130,188 +143,13 @@ public interface Posfijo {
 		return false;
 	}
 	
-//	public static String analizador(String expresion) {
-//		Matcher comparador = PATRON.matcher(expresion);
-//
-//		int contador = 0, estado = 0, parentesis = 0;
-//
-//		boolean subExpresion = false;
-//
-//		String postFijo = "", subExpresionS = "";
-//
-//		Stack<String> pila = new Stack<String>();
-//
-//		while (comparador.find()) {
-//
-//			String tipoDeDato = comparador.group("ENTERO") != null ? "T-ENTERO"
-//					: comparador.group("DECIMAL") != null ? "T-DECIMAL"
-//							: comparador.group("LOGICO") != null ? "T-LOGICO"
-//									: comparador.group("TEXTO") != null ? "T-TEXTO"
-//											: comparador.group("IDENTIFICADOR") != null ? "IDENTIFICADOR"
-//													: comparador.group("PARENTESIS") != null ? "PARENTESIS"
-//															: comparador.group("OPERADOR") != null ? "OPERADOR" : null;
-//
-//			if (tipoDeDato.equals("PARENTESIS")) {
-//				if (comparador.group().equals("(")) {
-//					if (subExpresion) {
-//						subExpresionS = subExpresionS + " " + comparador.group();
-//					}
-//					System.out.println("INFO L" + linea + ": PARENTESIS DE APERTURA E:" + estado);
-//					if (estado == 0 || estado == 2) {
-//						System.out.println("INFO L" + linea + ": PARENTESIS DE APERTURA");
-//						subExpresion = true;
-//						parentesis++;
-//					} else {
-//						System.out.println("INFO L" + linea + ": PARENTESIS DE APERTURA POSTERIOR A TIPO DE DATO");
-//						return "";
-//					}
-//
-//				} else if (comparador.group().equals(")")) {
-//					if ((estado != 2 && estado != 0) && parentesis > 0) {
-//
-//						System.out.println("INFO L" + linea + ": PARENTESIS DE CIERRE");
-//						parentesis--;
-//						if (parentesis == 0) {
-//							System.out.println("SUBEXPRESION - " + subExpresionS);
-//							String recursivaPF = analizador(compuesta, declaracion, tipoDeVariable, subExpresionS,
-//									linea, ts);
-//							if (recursivaPF.isEmpty()) {
-//								System.out.println("********recursiva es vacia********");
-//								return "";
-//							} else {
-//								postFijo = postFijo + " " + recursivaPF;
-//								subExpresion = false;
-//								subExpresionS = "";
-//							}
-//						}
-//						if (subExpresion) {
-//							subExpresionS = subExpresionS + " " + comparador.group();
-//						}
-//					} else {
-//						System.out.println("ERROR L" + linea + ": PARENTESIS DE CIERRE EN INICIO DE EXPRESION");
-//						return "";
-//					}
-//
-//				}
-//
-//			} else if (tipoDeDato.equals("IDENTIFICADOR") && estado != 1) {
-//				int llave = ts.hash(comparador.group());
-//				boolean estaEnTabla = ts.containsKey(llave);
-//				if (declaracion) {
-//					if (!estaEnTabla) {
-//						ts.put(llave, new Variable(tipoDeVariable, comparador.group()));
-//						System.out.println("INFO L" + linea + ": SE AÑADIO EL IDENTIFICADOR A LA TABLA DE SIMBOLOS");
-//						estado = 1;
-//						if (subExpresion) {
-//							subExpresionS = subExpresionS + " " + comparador.group();
-//						} else {
-//							postFijo = postFijo + " " + comparador.group();
-//						}
-//					} else {
-//						System.out.println("ERROR L" + linea + ": IDENTIFICADOR DUPLICADO EN LA TABLA");
-//						return "";
-//					}
-//				} else if (estaEnTabla) {
-//					System.out.println("INFO L" + linea + ": ENCONTRO EL IDENTIFICADOR EN LA TABLA");
-//					estado = 1;
-//					if (subExpresion) {
-//						subExpresionS = subExpresionS + " " + comparador.group();
-//					} else {
-//						postFijo = postFijo + " " + comparador.group();
-//					}
-//				} else {
-//					System.out.println("ERROR L" + linea + ": NO SE ENCONTRO EL IDENTIFICADOR EN LA TABLA");
-//					return "";
-//				}
-//			} else if (tipoDeDato.equals("OPERADOR") && estado != 2) {
-//
-//				if (contador == 0 && comparador.group().equals("-")) {
-//					System.out.println("INFO L" + linea + ": OPERADOR NEGATIVO INICIAL");
-//					estado = 2;
-//					if (subExpresion) {
-//						subExpresionS = subExpresionS + " " + comparador.group();
-//					} else if (pila.empty()) {
-//						pila.push("-");
-//					}
-//				} else if (contador != 0 && estado == 1) {
-//
-//					System.out.println("INFO L" + linea + ": OPERADOR NO INICIAL");
-//					estado = 2;
-//					if (subExpresion) {
-//						subExpresionS = subExpresionS + " " + comparador.group();
-//					} else if (pila.empty()) {
-//						pila.push(comparador.group());
-//					} else {
-//						int actual = jerarquia(comparador.group());
-//						int ultimoPila = jerarquia(pila.peek());
-//
-//						while (actual < ultimoPila) {
-//							postFijo = postFijo + " " + pila.peek();
-//							pila.pop();
-//							ultimoPila = !pila.empty() ? jerarquia(pila.peek()) : actual;
-//						}
-//
-//						if (actual == ultimoPila) {
-//							while (!pila.empty()) {
-//								postFijo = postFijo + " " + pila.peek();
-//								pila.pop();
-//							}
-//							pila.push(comparador.group());
-//						} else if (actual > ultimoPila) {
-//							pila.push(comparador.group());
-//						}
-//					}
-//				} else {
-//					System.out.println("ERROR L" + linea + ": OPERADOR INICIAL");
-//					return "";
-//				}
-//			} else if (tipoDeDato.substring(0, 1).equals("T") && declaracion == false && estado != 1) {
-//				System.out.println("INFO L" + linea + ": TIPO DE DATO RECONOCIDO");
-//				estado = 1;
-//				if (subExpresion) {
-//					subExpresionS = subExpresionS + " " + comparador.group();
-//				} else {
-//					postFijo = postFijo + " " + comparador.group();
-//				}
-//			} else {
-//				System.out.println(
-//						"ERROR L" + linea + ": MULTIPLE | ES UN IDENTIFICADOR NO VALIDO \n" + comparador.group());
-//				return "";
-//			}
-//
-//			contador++;
-//			if (!compuesta && contador > 1) {
-//				System.out.println("ERROR L" + linea + ": EXPRESION COMPUESTA EN CAMPO SIMPLE");
-//				return "";
-//			}
-//
-//		}
-//
-//		if (estado == 2) {
-//			System.out.println("ERROR L" + linea + ": TERMINA EN OPERADOR");
-//			return "";
-//		}
-//
-//		if (parentesis != 0) {
-//			System.out.println("ERROR L" + linea + ": REVISAR PARENTESIS");
-//			return "";
-//		}
-//
-//		while (!pila.empty()) {
-//			postFijo = postFijo + " " + pila.peek();
-//			pila.pop();
-//		}
-//
-//		return postFijo;
-//	}
-
 	public static int jerarquia(String operador) {
 
 		int rta = (operador.matches("\\|\\|")) ? 1
 				: (operador.matches("\\&\\&")) ? 2
-				: (operador.matches("\\=\\=|\\=!|\\>|\\<|\\<\\=|\\>\\=")) ? 3
-				: (operador.matches("\\%")) ? 4
-				: (operador.matches("\\+|\\-")) ? 5
+				: (operador.matches("\\=\\=|\\!\\=|\\>|\\<|\\<\\=|\\>\\=")) ? 3
+				: (operador.matches("\\+|\\-")) ? 4
+				: (operador.matches("\\%")) ? 6
 				: (operador.matches("\\*|\\/")) ? 6
 				: (operador.matches("\\^")) ? 7
 				: (operador.matches("\\(|\\)")) ? 8 : 0;

@@ -1,65 +1,72 @@
 package application;
 
-import org.fxmisc.richtext.InlineCssTextArea;
-
-import javafx.scene.control.Button;
+import java.util.ArrayList;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-
 public class Consolas extends TabPane {
 
 	Tab pestañaConsolaDeErrores, pestañaConsolaDeEntradas;
-	Button btn;
-	HBox entrada;
-	VBox areaEntrada;
-	TextArea consolaEntradas, consolaErrores;
-	//InlineCssTextArea consolaErrores;
+	TextArea  consolaErrores;
+	ConsolaEntradas areaEntrada;
+	int numeroDeLineas;
+	
 	public Consolas() {
-		//consolaErrores= new InlineCssTextArea();
 		consolaErrores = new TextArea();
-		consolaEntradas = new TextArea();
-		consolaEntradas.setPrefHeight(550);
-		TextField tf = new TextField();
-		tf.setPrefWidth(300);
-		btn = new Button("Ingresar");
-		btn.setPrefWidth(100);
-		entrada = new HBox(tf, btn);
-		areaEntrada = new VBox(consolaEntradas, entrada);
-		pestañaConsolaDeErrores = new Tab("Consola de Errores", consolaErrores);
-		pestañaConsolaDeEntradas = new Tab("Consola de Entradas", areaEntrada);
-		getTabs().add(pestañaConsolaDeErrores);
-		getTabs().add(pestañaConsolaDeEntradas);
 		consolaErrores.setEditable(false);
+		pestañaConsolaDeErrores = new Tab("Consola de Errores", consolaErrores);
+		
+		areaEntrada = new ConsolaEntradas();
+		pestañaConsolaDeEntradas = new Tab("Consola de Entradas", areaEntrada);
+		widthProperty().addListener((observable, oldValue, newValue) ->
+        {
+        	areaEntrada.actualizarTamaño(newValue.doubleValue());
+        	
+        });
+		pestañaConsolaDeErrores.setClosable(false);
+		pestañaConsolaDeEntradas.setClosable(false);
+		
+		getTabs().addAll(pestañaConsolaDeErrores, pestañaConsolaDeEntradas);
+	
 		setPrefWidth(400);
+		numeroDeLineas=0;
 	}
 	
-	public void presentarErrores(String errores){
-//		System.out.println("presentando");
-		/*int desde = consolaErrores.getText().length();
-		int hasta = desde+ errores.length();
-		consolaErrores.appendText(errores);
-		consolaErrores.setStyle(desde, hasta, "-fx-fill: red;");*/
-		consolaErrores.setText(errores);
+	public void presentarErrores(ArrayList<String> errores){
+		String texto = String.join( "\n", errores);
+		consolaErrores.setText(texto);
 	}
 
-//	public TextArea getConsolaErrores() {
-//		return consolaErrores;
-//	}
-
-//	public void setConsolaErrores(TextArea consolaErrores) {
-//		this.consolaErrores = consolaErrores;
-//	}
-
-	public TextArea getConsolaEntradas() {
-		return consolaEntradas;
+	
+	public void actualizarConsolaEntradas(int numeroDeLineas) {
+		if (numeroDeLineas!=this.numeroDeLineas) {
+			int diferencia = numeroDeLineas - this.numeroDeLineas;
+			if(diferencia > 0) {
+				for (int i = 0; i < diferencia; i++) {
+					areaEntrada.agregarFila();
+				}
+				/** Agrega Filas en Tabla de Entradas */
+			}else {
+				diferencia= Math.abs(diferencia);
+				for (int i = 0; i < diferencia; i++) {
+					areaEntrada.eliminarFila();
+				}
+				/** Elimina filas en Tabla de Entradas */
+			}
+			this.numeroDeLineas=numeroDeLineas;
+		}
 	}
-
-	public void setConsolaEntradas(TextArea consolaEntradas) {
-		this.consolaEntradas = consolaEntradas;
+	
+	public void escribirEnConsola(String expresion, int numeroDeLinea) {
+		areaEntrada.escribir(expresion, numeroDeLinea);
+	}
+	
+	public String leerLinea(int numeroDeLinea){
+		return areaEntrada.leerLinea(numeroDeLinea);
+	}
+	
+	public void limpiar(){
+		areaEntrada.limpiar();
 	}
 
 }

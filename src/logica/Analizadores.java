@@ -1,628 +1,533 @@
 package logica;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Stack;
+import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 public class Analizadores {
 	private static final String ENTERO = "[0-9]+";
 	private static final String REAL = "[0-9]+\\.[0-9]+";
 	private static final String LOGICO = "verdadero|falso";
 	private static final String TEXTO = "\"([^\"\\\\]|\\\\.)*\"";
-	//private static final String TEXTO ="\".*\"";
+	// private static final String TEXTO ="\".*\"";
 	private static final String PARENTESIS = "\\(|\\)";
-	private static final String OPERADOR = "\\^|\\/|\\*|\\+|\\-|\\%|\\=\\=|\\=!|\\>|\\<|\\<\\=|\\>\\=|\\&\\&|\\|\\|";
-	
-	/** IDENTIFICADOR DE ESPACIOS PARA TOAMR SIMBOLOS NO RECONOCIDOS */
+	private static final String OPERADOR = "\\^|\\/|\\*|\\+|\\-|\\%|\\=\\=|\\!\\=|\\>\\=|\\<\\=|\\<|\\>|\\&\\&|\\|\\|";
 	private static final String ESPACIO = "\\s+";
-	
-	/** EXPRESION REGULAR PARA METODO DE LECTURA */
-	private static final String LEER = "Leer["+ESPACIO+TEXTO+ESPACIO+"]";
-
+	private static final String COMA = "\\,";
 	private static final String IDENTIFICADOR = "[a-z]+([0-9]+)?";
+	private static final String PALABRAS_PROHIBIDAS ="repetir([0-9]+)?|veces([0-9]+)?|mientras([0-9]+)?|que([0-9]+)?|si([0-9]+)?|sino([0-9]+)?|entero([0-9]+)?|real([0-9]+)?|logico([0-9]+)?|texto([0-9]+)?|end([0-9]+)?|jump([0-9]+)?|leer([0-9]+)?|escribir([0-9]+)?";
 
 	private Pattern PATRON = Pattern.compile(
-			   "(?<LOGICO>" + LOGICO + ")" 
-			+ "|(?<REAL>" + REAL + ")"
-			+ "|(?<ENTERO>" + ENTERO + ")" 
-			+ "|(?<IDENTIFICADOR>" + IDENTIFICADOR + ")" 
-			+ "|(?<TEXTO>" + TEXTO + ")"
-			+ "|(?<PARENTESIS>" + PARENTESIS + ")" 
-			+ "|(?<OPERADOR>" + OPERADOR + ")"
-			+ "|(?<ESPACIO>" + ESPACIO + ")" 
-			);
+			"(?<COMA>" + COMA + ")" + "|(?<LOGICO>" + LOGICO + ")" + "|(?<REAL>" + REAL + ")" + "|(?<ENTERO>" + ENTERO
+					+ ")" + "|(?<IDENTIFICADOR>" + IDENTIFICADOR + ")" + "|(?<TEXTO>" + TEXTO + ")" + "|(?<PARENTESIS>"
+					+ PARENTESIS + ")" + "|(?<OPERADOR>" + OPERADOR + ")" + "|(?<ESPACIO>" + ESPACIO + ")"
+	);
 
 	private ArrayList<String> errores;
+	Hashtable<Integer, ExpresionesLinea> expresionesPosfijas;
+	
 	TablaDeSimbolos tablaDeSimbolos;
 	
-	public Analizadores() {
-		errores = new ArrayList<>();
-		tablaDeSimbolos= new TablaDeSimbolos();
-	}
 
-	public boolean evaluate(boolean compuesta, boolean declaracion, String tipoDeVariable, String expresion, int linea) {
-		String pf = analizador(compuesta, declaracion, tipoDeVariable, expresion, linea);
-		errores.add(" POST FIJO --------> "+pf);
-		if (pf.isEmpty()) {
-			return false;
-		}
-		if (compuesta) {
-			String rta = evaluar(pf);
-			if (!rta.equals("X")) {
-				errores.add("--- Se espera el tipo de dato: " + tipoDeVariable +" | Tipo generado: " + rta);
-				if (rta.equals(tipoDeVariable) ) {
-					return true;
-				} else if (tipoDeVariable.equals("R") && rta.equals("E")){
-					return true;
-				}else {
-					errores.add("ERROR: EL RESULTADO DE LA EXPRESION NO COINCIDE \n CON EL TIPO DE VARIABLE ");
-					return false;
-				}
-			} else {
-				errores.add("ERROR: Expresion no operable");
+	public Analizadores() {
+		errores = new ArrayList<String>();
+		tablaDeSimbolos = new TablaDeSimbolos();
+		expresionesPosfijas = new Hashtable<Integer,ExpresionesLinea >();
+	}
+	
+	public boolean evaluate(boolean compuesta, boolean declaracionAsignacion, String tipoDeVariable, String expresion,
+			int linea, boolean repetir, boolean escribir) {
+		
+		errores.add((new StringBuilder()).append("LINEA ").append(linea).append(":\nExpresion: ").append(expresion).append("\nCompuesta: ").append(compuesta).append("\nDeclaracion: ").append(declaracionAsignacion).append("\nTipo: ").append(tipoDeVariable).toString());
+		
+		errores.add("······································");
+		
+		if (compuesta == true && declaracionAsignacion == true) {
+			
+			/** La unica parte de una declaracion simple: 
+			 * 
+			 * ENTERO [ ];
+			 * 
+			 * **/
+			
+			ArrayList<String> pf = analizador(compuesta, declaracionAsignacion, tipoDeVariable, expresion, linea);
+			
+			if (pf == null || pf.isEmpty()) {
+				errores.add("######################################");
 				return false;
 			}
+			errores.add("Se añade la expresion "+pf);
+			añadirExpresionLinea(String.join(" ", pf), linea, tipoDeVariable);
+			
+		} else if (compuesta == true && declaracionAsignacion == false) {
+			
+			/** La segunda parte de una asignacion y una condicion sea while-for-if:
+			 *  
+			 *  ... = [ ]; 
+			 *  if([   ]) 
+			 *  for([   ]) 
+			 *  while([   ])
+			 *  
+			 *  **/
+			
+			ArrayList<String> pf = analizador(compuesta, declaracionAsignacion, tipoDeVariable, expresion, linea);
+			if (pf == null || pf.isEmpty()) {
+				errores.add("######################################");
+				return false;
+			}
+			String posfija = Posfijo.postfija(pf.toArray(new String[0]));
+			
+			errores.add("Se añade la expresion "+posfija);
+			
+			añadirExpresionLinea(posfija, linea, null);
+			errores.add((new StringBuilder()).append("POST FIJO --------> ").append(posfija).toString());
+			String rta = Evaluador.evaluarSemanticamente(posfija, tablaDeSimbolos);
+			
+			errores.add((new StringBuilder()).append("INFO L").append(linea).append(": Se espera el tipo de dato <").append(tipoDeVariable).append("> y el tipo generado es <").append(rta).append(">").toString());
+			if (rta.equals("X")) {
+				errores.add("ERROR: Expresion no operable");
+				errores.add("######################################");
+				return false;
+			} else {
+				if (escribir) {
+					return true;
+				}
+				if (rta.equals(tipoDeVariable)|| (tipoDeVariable.equals("R") && rta.equals("E"))) {
+					errores.add("######################################");
+					return true;
+				} else {
+					errores.add("ERROR: El resultado de la expresion no\ncoincide con el tipo de la variable");
+					errores.add("######################################");
+					return false;
+				}
+			}
+		} else if (compuesta == false && declaracionAsignacion == true) {
+			
+			/** La primera parte de una Declaracion-Asignacion 
+			 * 
+			 *  entero [  ] = ...; 
+			 * 
+			 * **/
+			
+			ArrayList<String> pf = analizador(compuesta, declaracionAsignacion, tipoDeVariable, expresion, linea);
+			if (pf == null || pf.isEmpty()) {
+				errores.add("######################################");
+				return false;
+			}
+			añadirExpresionLinea(String.join(" ", pf), linea, tipoDeVariable);
+		} else if (compuesta == false && declaracionAsignacion == false) {
+			
+			/** La primera parte de una asignacion, la segunda parte de una declaracion:
+			 * 
+			 *  [  ] = ...; 
+			 *  entero ... = [   ];
+			 *  
+			 *  **/
+			
+			ArrayList<String> pf =  analizador(compuesta, declaracionAsignacion, tipoDeVariable, expresion, linea);
+			if (pf == null || pf.isEmpty()) {
+				errores.add("######################################");
+				return false;
+			}
+			
+			String posfija = Posfijo.postfija(pf.toArray(new String[0]));
+			añadirExpresionLinea(posfija, linea, null);
+			errores.add((new StringBuilder()).append("POST FIJO --------> ").append(posfija).toString());
+			if (posfija.matches(IDENTIFICADOR)) {
+				if(tipoDeVariable.equals(encontrarTipoParaIdentificador(posfija.trim()))) {
+					errores.add("######################################");
+					return true;
+				}else {
+					errores.add("ERROR: El tipo del identificador no\ncoincide con el tipo de la variable");
+					errores.add("######################################");
+					return false;
+				}
+			}else {
+				if (!posfija.isEmpty()) {
+					String rta = Evaluador.evaluarSemanticamente(posfija, tablaDeSimbolos);
+					if(repetir) {
+						String expresionlimpia= expresion.replace(" ", "");
+						if (!expresionlimpia.matches(ENTERO)) {
+							errores.add("ERROR: El valor en la expresion repetir\nno es un entero");
+							errores.add("######################################");
+							return false;
+						}
+						int valor= 0;
+						try {
+							valor= Integer.parseInt(expresionlimpia);
+						}catch (Exception e) {
+							errores.add((new StringBuilder()).append("ERROR: El valor en la expresion <").append(expresion).append(",").append(pf).append("> no es valido").toString());
+							errores.add("######################################");
+							return false;
+						}
+						
+						if(valor<0) {
+							errores.add((new StringBuilder()).append("ERROR: El valor en la expresion <").append(expresion).append(",").append(pf).append("> repetir es menor a 0").toString());
+							errores.add("######################################");
+							return false;
+						}else if(valor==0) {
+							errores.add("ERROR: El valor en la expresion repetir\nes igual a 0");
+							errores.add("######################################");
+							return false;
+						}else {
+							return true;
+						}
+					}
+					if (rta.equals(tipoDeVariable)) {
+						errores.add("######################################");
+						return true;
+					} else if (tipoDeVariable.equals("R") && rta.equals("E")) {
+						errores.add("######################################");
+						return true;
+					} else {
+						errores.add("ERROR: El resultado de la expresion no\n coincide con el tipo de la variable");
+						errores.add("######################################");
+						return false;
+					}
+				}else {
+					errores.add("ERROR: La expresion es vacia");
+					errores.add("######################################");
+					return false;	
+				}
+			}
 		}
+		errores.add("######################################");
 		return true;
 	}
+	
+	public void informacion() {
+		errores.add(imprimirTablaDeSimbolos());
+		errores.add("######################################");
+		errores.add(imprimirExpresionesPosfijas());
+		System.out.println(imprimirExpresionesPosfijas());
+		errores.add("######################################");
+	}
 
-	public String analizador(boolean compuesta, boolean declaracion, String tipoDeVariable, String expresion, int linea) {
+	public ArrayList<String> analizador(boolean compuesta, boolean declaracionAsignacion, String tipoDeVariable, String expresion,
+			int linea) {
 		Matcher comparador = PATRON.matcher(expresion);
-		int contador = 0, estado = 0, parentesis = 0, ultimoCaracterIdentificado=0;
-		boolean subExpresion = false;
-		String postFijo = "", subExpresionS = "";
+		int contador = 0, estado = 0, parentesis = 0, ultimoCaracterIdentificado = 0;
+		ArrayList<String> separado = new ArrayList<>();
+		//boolean subExpresion = false;
+		//String postFijo = "", subExpresionS = "";
 
-		Stack<String> pila = new Stack<String>();
+//		Stack<String> pila = new Stack<String>();
 
 		while (comparador.find()) {
-			
-			String tipoDeDato = comparador.group("ENTERO") != null ? "T-ENTERO"
-					: comparador.group("REAL") != null ? "T-REAL"
-					: comparador.group("LOGICO") != null ? "T-LOGICO"
-					: comparador.group("TEXTO") != null ? "T-TEXTO"
-					: comparador.group("IDENTIFICADOR") != null ? "IDENTIFICADOR"
-					: comparador.group("PARENTESIS") != null ? "PARENTESIS"
-					: comparador.group("OPERADOR") != null ? "OPERADOR" 
-					: comparador.group("ESPACIO") != null ? "ESPACIO"
-							: null;
 
-			errores.add(tipoDeDato+ " : " + comparador.group() + " INICIO: "+ comparador.start()+ " FINAL: "+comparador.end());
+			String tipoDeDato = comparador.group("ENTERO") != null ? "T-ENTERO"
+								: comparador.group("REAL") != null ? "T-REAL"
+								: comparador.group("LOGICO") != null ? "T-LOGICO"
+								: comparador.group("TEXTO") != null ? "T-TEXTO"
+								: comparador.group("IDENTIFICADOR") != null ? "IDENTIFICADOR"
+								: comparador.group("PARENTESIS") != null ? "PARENTESIS"
+								: comparador.group("OPERADOR") != null ? "OPERADOR"
+								: comparador.group("ESPACIO") != null ? "ESPACIO"
+								: comparador.group("COMA") != null ? "COMA"
+								: null;
+//DATO RECONOCIDO:
+//			errores.add(tipoDeDato + " : -" + comparador.group() + "- estado anterior: "+estado);
+			
+			/**
+			 * ESTADO:
+			 * 	   -1 es coma
+			 * 		1 es dato simple o variable/identificador
+			 * 		2 es operador
+			 * 		3 es parentesis de apertura
+			 * 		4 es parentesis de cierre
+			 * */
+			
+			
 			contador++;
-			if(tipoDeDato.equals("ESPACIO")) {
+			if (tipoDeDato.equals("ESPACIO")) {
 				contador--;
-			}else if (tipoDeDato.equals("PARENTESIS")) {
+			} else if (tipoDeDato.equals("COMA")) {
+				if (compuesta && declaracionAsignacion) {
+					if (estado==1) {
+						separado.add(comparador.group());
+						contador--;
+						estado = -1;
+					}else {
+						errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": La <,> (COMA) no se encuentra despues\n de un identificador").toString());
+						return null;
+					}
+				} else {
+					errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Separador <,> (COMA) no valido para\neste campo").toString());
+					return null;
+				}
+			} else if (tipoDeDato.equals("PARENTESIS")) {
+				
+				if (declaracionAsignacion) {
+					errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Parentesis no valido en una declaracion").toString());
+					return null;
+				}
 				
 				if (comparador.group().equals("(")) {
-					if (subExpresion) {
-						subExpresionS = subExpresionS + " " + comparador.group();
-					}
-					errores.add("INFO L" + linea + ": PARENTESIS DE APERTURA E:" + estado);
-					if (estado == 0 || estado == 2) {
-						errores.add("INFO L" + linea + ": PARENTESIS DE APERTURA");
-						subExpresion = true;
-						parentesis++;
+					//errores.add((new StringBuilder()).append("INFO L").append(linea).append(": Parentesis de apertura estado:").append(estado).toString());
+					if (estado != 1) {
+						if (estado !=4) {
+							errores.add((new StringBuilder()).append("INFO L").append(linea).append(": Parentesis de apertura").toString());
+							separado.add(comparador.group());
+							parentesis++;
+							estado = 3;
+						}else {
+							errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": No hay operador entre el parentesis de cierre y el parentesis de apertura").toString());
+							return null;
+						}
 					} else {
-						errores.add("INFO L" + linea + ": PARENTESIS DE APERTURA POSTERIOR A TIPO DE DATO");
-						return "";
+						errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Parentesis de apertura posterior a tipo de dato").toString());
+						return null;
 					}
-
 				} else if (comparador.group().equals(")")) {
-					if ((estado != 2 && estado != 0) && parentesis > 0) {
-
-						errores.add("INFO L" + linea + ": PARENTESIS DE CIERRE");
-						parentesis--;
-						if (parentesis == 0) {
-							errores.add("SUBEXPRESION - " + subExpresionS);
-							String recursivaPF = analizador(compuesta, declaracion, tipoDeVariable, subExpresionS,
-									linea);
-							if (recursivaPF.isEmpty()) {
-								errores.add("********recursiva es vacia********");
-								return "";
-							} else {
-								postFijo = postFijo + " " + recursivaPF;
-								subExpresion = false;
-								subExpresionS = "";
+					if (parentesis > 0) {
+						if (estado!=0) {
+							if (estado != 2) {
+								if (estado != 3) {
+									errores.add((new StringBuilder()).append("INFO L").append(linea).append(": Parentesis de cierre").toString());
+									parentesis--;
+									estado = 4;
+									separado.add(comparador.group());
+								}else {
+									errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Expresion vacia entre parentesis").toString());
+									return null;
+								}
+							}else {
+								errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": No hay identificador antes del parentesis de cierre").toString());
+								return null;
 							}
+						}else {
+							errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Parentesis de cierre al inicio de expresion").toString());
+							return null;
 						}
-						if (subExpresion) {
-							subExpresionS = subExpresionS + " " + comparador.group();
-						}
-					} else {
-						errores.add("ERROR L" + linea + ": PARENTESIS DE CIERRE EN INICIO DE EXPRESION");
-						return "";
+					}else {
+						errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Parentesis de cierre sin parentesis de apertura presente").toString());
+						return null;
 					}
-
 				}
-
 			} else if (tipoDeDato.equals("IDENTIFICADOR") && estado != 1) {
-				
-				String llave = hash(comparador.group());
+				String llave = tablaDeSimbolos.hash(comparador.group());
 				boolean estaEnTabla = tablaDeSimbolos.containsKey(llave);
-				if (declaracion) {
-					if (!estaEnTabla) {
-						tablaDeSimbolos.put(llave, new Variable(null, tipoDeVariable, comparador.group()));
-						errores.add("INFO L" + linea + ": SE AÑADIO EL IDENTIFICADOR A LA TABLA DE SIMBOLOS <"+tipoDeVariable+">");
-						estado = 1;
-						if (subExpresion) {
-							subExpresionS = subExpresionS + " " + comparador.group();
-						} else {
-							postFijo = postFijo + " " + comparador.group();
+				
+				if (declaracionAsignacion) {
+					if (comparador.group().length() <= 15) {
+						if (!comparador.group().matches(PALABRAS_PROHIBIDAS)) {
+							if (!estaEnTabla) {
+								tablaDeSimbolos.put(llave, new Variable("", tipoDeVariable, comparador.group()));
+								errores.add((new StringBuilder()).append("INFO L").append(linea).append(": Se añadio el identificador en la tabla\nde simbolos <").append(llave).append(":").append(tipoDeVariable).append(">").toString());
+								estado = 1;
+								separado.add(comparador.group());
+							
+							} else {
+								errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": El identificador ya fue declarado").toString());
+								return null;
+							}
+						}else {
+							errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": El nombre de este identificador <").append(comparador.group()).append(">\nes una palabra reservada").toString());
+							return null;
 						}
 					} else {
-						errores.add("ERROR L" + linea + ": IDENTIFICADOR DUPLICADO EN LA TABLA");
-						return "";
+						errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": El identificador es mayor a 15 caracteres").toString());
+						return null;
 					}
+
 				} else if (estaEnTabla) {
-					errores.add("INFO L" + linea + ": ENCONTRO EL IDENTIFICADOR EN LA TABLA");
+					errores.add((new StringBuilder()).append("INFO L").append(linea).append(": Se encontro el identificador <").append(comparador.group()).append("> en la tabla").toString());
 					estado = 1;
-					if (subExpresion) {
-						subExpresionS = subExpresionS + " " + comparador.group();
-					} else {
-						postFijo = postFijo + " " + comparador.group();
-					}
+					separado.add(comparador.group());
+
 				} else {
-					errores.add("ERROR L" + linea + ": NO SE ENCONTRO EL IDENTIFICADOR EN LA TABLA");
-					return "";
+					errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": No se encontró el identificador <").append(comparador.group()).append("> en la tabla").toString());
+					return null;
 				}
 			} else if (tipoDeDato.equals("OPERADOR") && estado != 2) {
-				errores.add("DEBUG L" + linea + ": "+ contador+" "+comparador.group()+ " "+comparador.group().equals("-"));
-				if (contador == 1 && comparador.group().equals("-")) {
-					errores.add("INFO L" + linea + ": OPERADOR NEGATIVO INICIAL");
-					estado = 2;
-					if (subExpresion) {
-						subExpresionS = subExpresionS + " " + comparador.group();
-					} else if (pila.empty()) {
-						pila.push("-");
-					}
-				} else if (contador != 0 && estado == 1) {
-
-					errores.add("INFO L" + linea + ": OPERADOR NO INICIAL");
-					estado = 2;
-					if (subExpresion) {
-						subExpresionS = subExpresionS + " " + comparador.group();
-					} else if (pila.empty()) {
-						pila.push(comparador.group());
-					} else {
-						int actual = jerarquia(comparador.group());
-						int ultimoPila = jerarquia(pila.peek());
-
-						while (actual < ultimoPila) {
-							postFijo = postFijo + " " + pila.peek();
-							pila.pop();
-							ultimoPila = !pila.empty() ? jerarquia(pila.peek()) : actual;
-						}
-
-						if (actual == ultimoPila) {
-							while (!pila.empty()) {
-								postFijo = postFijo + " " + pila.peek();
-								pila.pop();
-							}
-							pila.push(comparador.group());
-						} else if (actual > ultimoPila) {
-							pila.push(comparador.group());
-						}
-					}
-				} else {
-					errores.add("ERROR L" + linea + ": OPERADOR INICIAL");
-					return "";
+//				errores.add("DEBUG L" + linea + ": " + contador + " " + comparador.group() + " "
+//						+ comparador.group().equals("-"));
+				if (declaracionAsignacion) {
+					errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Operador no valido en declaración").toString());
+					return null;
 				}
-			} else if (tipoDeDato.substring(0, 1).equals("T") && declaracion == false && estado != 1) {
 				
-				errores.add("INFO L" + linea + ": TIPO DE DATO RECONOCIDO");
-				estado = 1;
-				if (subExpresion) {
-					subExpresionS = subExpresionS + " " + comparador.group();
+				if (comparador.group().equals("-")) {
+					if (estado==3 || (contador==1 && estado == 0) ) {
+						errores.add((new StringBuilder()).append("INFO L").append(linea).append(": Operador negativo inicial").toString());
+						estado = 2;
+						contador--;
+						separado.add("0");
+						separado.add(comparador.group());
+	
+					}else if (estado == 1 || estado==4) {
+						estado = 2;
+						separado.add(comparador.group());
+					} else {
+						errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Operador negativo no precede a un parentesis de apertura,\n no es inicial en la expresion y tampoco precede un identificador o valor").toString());
+						return null;
+					}
+				} else if (contador > 1 ) {
+					if (estado!=2) {
+						if (estado!=3) {
+							errores.add((new StringBuilder()).append("INFO L").append(linea).append(": Operador no inicial").toString());
+							estado = 2;
+							separado.add(comparador.group());
+						}else {
+							errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": El operador precede un parentesis de apertura").toString());
+							return null;
+						}
+						
+					}else {
+						errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": El operador precede un operador").toString());
+						return null;
+					}
+					
 				} else {
-					postFijo = postFijo + " " + comparador.group();
+					errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": El operador es inicial en la expresion").toString());
+					return null;
 				}
-			}else{
-				errores.add("ERROR L" + linea + ": MULTIPLE | ES UN IDENTIFICADOR NO VALIDO \n" + comparador.group());
-				return "";
+			} else if (tipoDeDato.substring(0, 1).equals("T") ) {	
+				// TIPO DE DATO RECONOCIDO
+				//errores.add("INFO L" + linea + ": TIPO DE DATO RECONOCIDO");
+				if (!declaracionAsignacion) {
+					if (estado!=1) {
+						if (estado != 4) {
+							estado = 1;
+							separado.add(comparador.group());
+						}else {
+							errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Dato simple precede un parentesis de cierre").toString());
+							return null;
+						}
+					}else {
+						errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Dato simple precede un identificador").toString());
+						return null;
+					}
+				} else{
+					errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Dato simple no valido en una declaración").toString());
+					return null;
+				}
+				
+			} else {
+				errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Error no identificado (multiple) ").append(comparador.group()).toString());
+				return null;
 			}
-			
-			if( contador == 0) {
-				if(comparador.start()== 0 ) {
-					ultimoCaracterIdentificado=comparador.end();
-				} else {
-					errores.add("ERROR L" + linea + ": SIMBOLO NO IDENTIFICADO <"+ultimoCaracterIdentificado+","+comparador.start() +">");
+
+			if (contador == 0|| contador==1) {
+				if (comparador.start() == 0) {
+					ultimoCaracterIdentificado = comparador.end();
+				} else if(ultimoCaracterIdentificado!=comparador.start()){
+					errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Simbolo no identificado <").append(expresion.substring(ultimoCaracterIdentificado, comparador.start())).append(">").toString());
+					return null;
 				}
 			}
 
-			if(comparador.start() != 0) {
-				errores.add("INFO L" + linea + ": SIMBOLO "+comparador.group()+" <"+ultimoCaracterIdentificado+","+comparador.start() +">");
-				if(ultimoCaracterIdentificado != comparador.start() ) {
-					errores.add("ERROR L" + linea + ": SIMBOLO NO IDENTIFICADO <"+expresion.substring(ultimoCaracterIdentificado, comparador.start())+">");
-					return "";
-				}else {
-					
+			if (comparador.start() != 0) {
+				if (ultimoCaracterIdentificado != comparador.start()) {
+					errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Simbolo no identificado <").append(expresion.substring(ultimoCaracterIdentificado, comparador.start())).append(">").toString());
+					return null;
+				} else {
+
 					ultimoCaracterIdentificado = comparador.end();
 				}
 			}
-			
-			if (!compuesta && contador > 1) {
-				errores.add("ERROR L" + linea + ": EXPRESION COMPUESTA EN CAMPO SIMPLE");
-				return "";
-			}
 
+			if (!compuesta && contador > 1) {
+				errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Expresion compuesta en campo simple").toString());
+				return null;
+			}
 		}
 
 		if (estado == 2) {
-			errores.add("ERROR L" + linea + ": TERMINA EN OPERADOR");
-			return "";
+			errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Termina en operador").toString());
+			return null;
+		}
+		
+		if (estado == -1) {
+			errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Termina en coma").toString());
+			return null;
 		}
 
 		if (parentesis != 0) {
-			errores.add("ERROR L" + linea + ": REVISAR PARENTESIS");
-			return "";
+			errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": Error en uso de parentesis").toString());
+			return null;
 		}
 
-		while (!pila.empty()) {
-			postFijo = postFijo + " " + pila.peek();
-			pila.pop();
-		}
-
-		return postFijo;
+		return separado;
 	}
 
-	public int jerarquia(String operador) {
-		int rta = (operador.matches("\\|\\|")) ? 1
-				: (operador.matches("\\&\\&")) ? 2
-				: (operador.matches("\\=\\=|\\=!|\\>|\\<|\\<\\=|\\>\\=")) ? 3
-				: (operador.matches("\\%")) ? 4
-				: (operador.matches("\\+|\\-")) ? 5
-				: (operador.matches("\\*|\\/")) ? 6
-				: (operador.matches("\\^")) ? 7
-				: (operador.matches("\\(|\\)")) ? 8 : 0;
-		return rta;
-	}
 
-	public String evaluar(String expresion) {
-		Matcher comparador = PATRON.matcher(expresion);
-		Stack<String> lista = new Stack<String>();
-		String tipoDeDato;
-		String vec= "R";
-		
-		while (comparador.find()) {
-			tipoDeDato = comparador.group("REAL") != null ? "R"
-						: comparador.group("ENTERO") != null ? "E"
-						: comparador.group("LOGICO") != null ? "L"
-						: comparador.group("TEXTO") != null ?  "T"
-						: comparador.group("IDENTIFICADOR") != null ? "I" 
-						: comparador.group("OPERADOR") != null ? "O"      
-						: comparador.group("ESPACIO") != null ? "S" : "X"; 
-			if(!tipoDeDato.equals("S")) {
-				if (!tipoDeDato.equals("O")) {
-					if (tipoDeDato.equals("I")) {
-						lista.push(tablaDeSimbolos.get(hash(comparador.group())).getTipo());
-					} else if (tipoDeDato.equals("T")) {
-						String textoSinComillas = comparador.group().replaceAll("\"","");
-						lista.push(tipoDeDato);
-					} else {
-						lista.push( tipoDeDato);
-					}
-				} else if (lista.size() > 1) {
-					String operando2Tipo = lista.peek();
-					lista.pop();
-					String operando1Tipo = lista.peek();
-					lista.pop();
-					//errores.add(operando1.getValor() + " " + comparador.group() + " " + operando2.getValor());
-					String resultado = operar( operando1Tipo, comparador.group(), operando2Tipo);
-					if (resultado.equals("X")) {
-						return vec;
-					}
-					lista.push(resultado);
-				} 
-				//---- NEGATIVO 
-				//else {
-					//Variable a = lista.peek();
-					//a.setValor(comparador.group() + a.getValor());
-					
-				//}
-			}
+	public String imprimirTablaDeSimbolos() {
+		StringBuilder tablaDeSimbolosTexto = new StringBuilder();
+		tablaDeSimbolosTexto.append("--------------- TABLA DE SIMBOLOS ---------------\n");
+		ArrayList<String> variables = tablaDeSimbolos.elements();
+		for (int i = 0; i < variables.size(); i++) {
+			tablaDeSimbolosTexto.append(variables.get(i)).append("\n");
 		}
-		vec = lista.peek();
-		return  vec;
+		return tablaDeSimbolosTexto.toString();
 	}
-
-	public String operar( String tipo1, String operador,  String tipo2) {
-		
-		/************************ OPERANDO *************************************/
-		String vec = "X";
-		if (tipo1.equals("R") && tipo2.equals("E") ) {
-			if (operador.equals("^")) {
-				vec = "R";
-				return vec;
-			} else if (operador.equals("/")) {
-				vec = "R";
-				return vec;
-			} else if (operador.equals("*")) {
-				vec = "R";
-				return vec;
-			} else if (operador.equals("+")) {
-				vec = "R";
-				return vec;
-			} else if (operador.equals("-")) {
-				vec = "R";
-				return vec;
-			} else if (operador.equals("%")) {
-				vec = "E";
-				return vec;
-			} else if (operador.equals("==")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals("=!")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals(">")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals("<")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals("<=")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals(">=")) {
-				vec = "L";
-				return vec;
-			}
-			/*************************************************************/
-		} else if (tipo1.equals("E") && tipo2.equals("R")) {
-			if (operador.equals("^")) {
-				vec = "R";
-				return vec;
-			} else if (operador.equals("/")) {
-				vec = "R";
-				return vec;
-			} else if (operador.equals("*")) {
-				vec = "R";
-				return vec;
-			} else if (operador.equals("+")) {
-				vec = "R";
-				return vec;
-			} else if (operador.equals("-")) {
-				vec = "R";
-				return vec;
-			} else if (operador.equals("%")) {
-				vec = "E";
-				return vec;
-			} else if (operador.equals("==")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals("=!")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals(">")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals("<")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals("<=")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals(">=")) {
-				vec = "L";
-				return vec;
-			}
-			/*-***********************************************************-*/
-		} else if (tipo1.equals("R") && tipo2.equals("T")) {
-			if (operador.equals("+")) {
-				vec = "T";
-				return vec;
-			}
-			/*-***********************************************************-*/
-		} else if (tipo1.equals("T") && tipo2.equals("R")) {
-			if (operador.equals("+")) {
-				vec = "T";
-				return vec;
-			}
-			/*-***********************************************************-*/
-		} else if (tipo1.equals("E") && tipo2.equals("T")) {
-			if (operador.equals("+")) {
-				vec = "T";
-				return vec;
-			}
-			/*-***********************************************************-*/
-		} else if (tipo1.equals("T") && tipo2.equals("E")) {
-			if (operador.equals("+")) {
-				vec = "T";
-				return vec;
-			}
-			/*-***********************************************************-*/
-		} else if (tipo1.equals("L") && tipo2.equals("T")) {
-			if (operador.equals("+")) {
-				vec = "T";
-				return vec;
-			}
-			/*-***********************************************************-*/
-		} else if (tipo1.equals("T") && tipo2.equals("L")) {
-			if (operador.equals("+")) {
-				vec = "T";
-				return vec;
-			}
-			/*-***********************************************************-*/
-		} else if (tipo1.equals("R") && tipo2.equals("R")) {
-			if (operador.equals("^")) {
-				vec = "R";
-				return vec;
-			} else if (operador.equals("/")) {
-				vec = "R";
-				return vec;
-			} else if (operador.equals("*")) {
-				vec = "R";
-				return vec;
-			} else if (operador.equals("+")) {
-				vec = "R";
-				return vec;
-			} else if (operador.equals("-")) {
-				vec = "R";
-				return vec;
-			} else if (operador.equals("%")) {
-				// VERIFICAR
-				vec = "E";
-				return vec;
-				// VERIFICAR
-			} else if (operador.equals("==")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals("=!")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals(">")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals("<")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals("<=")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals(">=")) {
-				vec = "L";
-				return vec;
-			}
-			/*-***********************************************************-*/
-		} else if (tipo1.equals("T") && tipo2.equals("T")) {
-			if (operador.equals("+")) {
-				vec = "T";
-				return vec;
-			} else if (operador.equals("==")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals("=!")) {
-				vec = "L";
-				return vec;
-			}
-			/*-***********************************************************-*/
-		} else if (tipo1.equals("E") && tipo2.equals("E")) {
-			if (operador.equals("^")) {
-				vec = "E";
-				return vec;
-			} else if (operador.equals("/")) {
-				vec = "E";
-				return vec;
-			} else if (operador.equals("*")) {
-				vec = "E";
-				return vec;
-			} else if (operador.equals("+")) {
-				vec = "E";
-				return vec;
-			} else if (operador.equals("-")) {
-				vec = "E";
-				return vec;
-			} else if (operador.equals("%")) {
-				vec = "E";
-				return vec;
-			} else if (operador.equals("==")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals("=!")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals(">")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals("<")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals("<=")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals(">=")) {
-				vec = "L";
-				return vec;
-			}
-			/*-***********************************************************-*/
-		} else if (tipo1.equals("L") && tipo2.equals("L")) {
-			if (operador.equals("==")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals("=!")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals("&&")) {
-				vec = "L";
-				return vec;
-			} else if (operador.equals("||")) {
-				vec = "L";
-				return vec;
-			}
-
-		}
-		
-		vec = "X";
-
-		return vec;
-	}
-
-	public void imprimirTablaDeSimbolos() {
-		System.out.println("--------------- TABLA DE SIMBOLOS ---------------");
-		Enumeration<Variable> values = tablaDeSimbolos.elements();
-		while (values.hasMoreElements()) {
-			Variable aux = values.nextElement();
-			System.out.println(aux.getTipo() + " " + aux.getValor() + " " + aux.getNombre());
-		}
+	
+	public String imprimirExpresionesPosfijas() {
+		StringBuilder expresionesPosfijasTexto = new StringBuilder();
+		expresionesPosfijasTexto.append("--------------- EXPRESIONES POSFIJAS ---------------\n");
+		expresionesPosfijasTexto.append(expresionesPosfijas);
+		return expresionesPosfijasTexto.toString();
 	}
 
 	public ArrayList<String> getVariables() {
-		Enumeration<Variable> values = tablaDeSimbolos.elements();
-		ArrayList<String> variables = new ArrayList<String>();
-		while (values.hasMoreElements()) {
-			Variable aux = values.nextElement();
-			variables.add(aux.getNombre());
-//			+ "\n" + aux.getValor());
-		}
-		return variables;
-	}
-
-	public String hash(String identificacdor) {
-		String llave = "";
-		int tam = identificacdor.length();
-		for (int i = 0; i < tam; i++) {
-			llave += (int)identificacdor.charAt(i);
-		}
-		return llave;
+		return tablaDeSimbolos.elements();
 	}
 
 	public void inicializarListaDeErrores() {
-		//tablaDeSimbolos = new Hashtable<String, Variable>();
-		tablaDeSimbolos= new TablaDeSimbolos();
+		tablaDeSimbolos = new TablaDeSimbolos();
 		errores = new ArrayList<String>();
+		expresionesPosfijas = new Hashtable<Integer,ExpresionesLinea >();
 	}
 
 	public void añadirVariable(String nombre, String tipo) {
-		tablaDeSimbolos.put(hash(nombre), new Variable(null, tipo, nombre));
+		tablaDeSimbolos.put(tablaDeSimbolos.hash(nombre), new Variable("", tipo, nombre));
 	}
-	
+
 	public void actualizarVariable(String nombre, String valor) {
-		tablaDeSimbolos.get(tablaDeSimbolos.hash(nombre)).valor=valor;
+		tablaDeSimbolos.get(tablaDeSimbolos.hash(nombre)).valor = valor;
 	}
-	
+
 	public TablaDeSimbolos getTablaDeSimbolos() {
 		return tablaDeSimbolos;
 	}
 
-	public String presentarErrores() {
-		String erroresResultado = "";
-		int tamaño = errores.size();
-		for (int i = 0; i < tamaño; i++) {
-			erroresResultado += errores.get(i) + "\n";
-		}
-		return erroresResultado;
+	public ArrayList<String> presentarErrores() {
+		return errores;
 	}
 
 	public String encontrarTipoParaIdentificador(String identificador) {
-		if (tablaDeSimbolos.containsKey(hash(identificador))) {
-			return tablaDeSimbolos.get(hash(identificador)).getTipo();
-		}else {
-			errores.add("ERROR: NO SE ENCUENTRA EL IDENTIFICADOR "+identificador);
+		if (tablaDeSimbolos.containsKey(tablaDeSimbolos.hash(identificador))) {
+			return tablaDeSimbolos.get(tablaDeSimbolos.hash(identificador)).getTipo();
+		} else {
+			errores.add("ERROR: No se encuentra el identificador\n <" + identificador + ">");
 			return "ERROR";
 		}
 	}
+	
+	public void añadirExpresionLinea(String expresion, int linea, String tipo) {
+//		System.out.println("Se añade: "+expresion);
+		if (expresionesPosfijas.containsKey(linea)) {
+			expresionesPosfijas.get(linea).setSegundaParte(expresion);
+//			System.out.println("Se añade primera parte: "+expresion);
+		} else {
+			expresionesPosfijas.put(linea, new ExpresionesLinea(expresion));
+//			System.out.println("Se añade segunda parte: "+expresion);
+		}
+		
+		if (tipo!=null) {
+//			System.out.println("Se añade tipo: "+expresion);
+			expresionesPosfijas.get(linea).setTipo(tipo);
+		}
+//		System.out.println("???????????????????????????????????????");
+	}
+	
+	public Hashtable<Integer, ExpresionesLinea> getExpresionesPosfijas() {
+		return expresionesPosfijas;
+	}
 
+	public void setExpresionesPosfijas(Hashtable<Integer, ExpresionesLinea> expresionesPosfijas) {
+		this.expresionesPosfijas = expresionesPosfijas;
+	}
+	
 }

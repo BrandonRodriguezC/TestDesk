@@ -1,0 +1,222 @@
+public void update() {
+		System.out.println("############## UPDATE ##################");
+		error = false;
+		ciclos = 0;
+		
+		StyledTextContent contenido = getContent();
+		String codigo = getCode(contenido);
+		Matcher matcher = PATTERN.matcher(codigo);
+		ArrayList<StyleRange> ar = new ArrayList<StyleRange>();
+
+		pilaBloqueRangos = new Stack<Integer>();
+
+		ARR = new StyleRange[0];
+		
+		while (matcher.find()) {
+
+			String styleClass = matcher.group("KEYWORD") != null ? "keyword"
+							: matcher.group("PARENTESIS") != null ? "brace"
+							: matcher.group("TIPODEDATO") != null ? "tipodedato"
+							: matcher.group("ASIGNACION") != null ? "asignacion"
+							: matcher.group("COMENTARIO") != null ? "comentario"
+							: matcher.group("CIERRE") != null ? "cierre"
+							: matcher.group("CIERREBLOQUE") != null ? "cierrebloque"
+							: matcher.group("APERTURABLOQUE") != null ? "aperturabloque"
+							: matcher.group("ESCRIBIR") != null ? "escribir"
+							: matcher.group("LEER") != null ? "leer"
+							: null;
+			assert styleClass != null;
+
+//			System.out.println(styleClass + ":\t"+ matcher.group());
+
+			if (styleClass.equals("tipodedato")) {
+				if (writeRangeS == 0) {
+					writeRangeS = matcher.end() + 1;
+					// writeRanges.add(writeRangeS + 1);
+					declaracionAsignacion = true;
+					declaracion = true;
+					tipoDeDatoEsperado = Character.toUpperCase(matcher.group().charAt(0)) + "";
+					ar.add(new StyleRange("keyword", matcher.start(), matcher.end() - matcher.start(), null, null));
+					System.out.println("Estilo keyword: " + matcher.start() + "-" + matcher.end());
+				}
+				
+			} else if (styleClass.equals("keyword")) {
+				
+				if (!declaracion && !declaracionAsignacion && !asignacion) {
+					keywordBloque = true;
+					ar.add(new StyleRange("keyword", matcher.start(), matcher.end() - matcher.start(), null, null));
+					if (matcher.group().equals("repetir")) {
+						tipoDeDatoEsperado = "E";
+					} else if (matcher.group().equals("si ") || matcher.group().equals("mientras que")) {
+						tipoDeDatoEsperado = "L";
+					}
+				}
+				
+			} else if (styleClass.equals("asignacion")) {
+				
+				declaracion = false;
+				
+				if (!estaEnMetodo) {
+					if (writeRangeS == 0) {
+						int lineActual = contenido.getLineAtOffset(matcher.start());
+						writeRangeS = contenido.getOffsetAtLine(lineActual) + (int) contenido.getLine(lineActual).chars().filter(ch -> ch == '\t').count();
+						declaracionAsignacion = false;
+					}
+					
+					if (writeRangeE == 0 && parentesisDeBloque == false) {
+						writeRangeE = matcher.start();
+						String expresion = codigo.substring(writeRangeS, writeRangeS + (writeRangeE - writeRangeS));
+						
+						if (!declaracionAsignacion) {
+							tipoDeDatoEsperado = ctrl.encontrarTipoParaIdentificador(expresion.trim());
+						}
+						
+						System.out.println(styleClass + " -> analizadores <" + expresion + ">");
+						
+						boolean lex = ctrl.evaluar(false, declaracionAsignacion, tipoDeDatoEsperado, expresion,
+								contenido.getLineAtOffset(writeRangeS) + 1, false, false);
+						
+						if (lex) {
+							estilizarExpresiones(ar, "expressionCorrecta", getLineAtOffset(matcher.start()));
+						} else {
+							estilizarExpresiones(ar, "expressionIncorrecta", getLineAtOffset(matcher.start()));
+							error = true;
+						}
+						
+						asignacion = true;
+						writeRangeS = matcher.end();
+					}
+				}
+				
+			} else if (styleClass.equals("cierre")) {
+				if (writeRangeS != 0) {
+					writeRangeE = matcher.end();
+					boolean lex = false;
+					String expresion = codigo.substring(writeRangeS, writeRangeS + (writeRangeE - writeRangeS - 1));
+					if (declaracion) {
+						lex = ctrl.evaluar(true, true, tipoDeDatoEsperado, expresion,
+								contenido.getLineAtOffset(writeRangeS) + 1, false, false);
+//						System.out.println(styleClass + " -> analizadores <" + expresion + ">");
+					} else if (declaracionAsignacion) {
+						lex = ctrl.evaluar(false, false, tipoDeDatoEsperado, expresion,
+								contenido.getLineAtOffset(writeRangeS) + 1, false, false);
+//						System.out.println(styleClass + " -> analizadores <" + expresion + ">");
+					} else {
+						lex = ctrl.evaluar(true, false, tipoDeDatoEsperado, expresion,
+								contenido.getLineAtOffset(writeRangeS) + 1, false, false);
+//						System.out.println(styleClass + " -> analizadores <" + expresion + ">");
+					}
+
+					if (lex) {
+						estilizarExpresiones(ar, "expressionCorrecta", getLineAtOffset(matcher.start()));
+					} else {
+						estilizarExpresiones(ar, "expressionIncorrecta", getLineAtOffset(matcher.start()));
+						error = true;
+					}
+
+				}
+				writeRangeE = 0;
+				writeRangeS = 0;
+				asignacion = false;
+				declaracionAsignacion = false;
+				declaracion = false;
+
+			} else if (styleClass.equals("aperturabloque")) {
+				pilaBloqueRangos.add(matcher.end());
+
+				// pilaBloqueRangos.add(menu.eliminarUltimoRango());
+
+			} else if (styleClass.equals("brace")) {
+				if (matcher.group().equals("(") && parentesisDeBloque == false && asignacion == false
+						&& keywordBloque == true) {
+					if (writeRangeS == 0) {
+						writeRangeS = matcher.start();
+						// writeRanges.add(writeRangeS);
+						parentesisDeBloque = true;
+					}
+				} else if (!matcher.group().equals("(") && keywordBloque == true) {
+					writeRangeE = matcher.start();
+					// writeRanges.add(writeRangeE);
+					String expresion = codigo.substring(writeRangeS + 1, writeRangeS + (writeRangeE - writeRangeS));
+					pilaBloqueRangos.add(matcher.end());
+
+					boolean lex = false;
+					if (tipoDeDatoEsperado.equals("E")) {
+						lex = ctrl.evaluar(false, false, tipoDeDatoEsperado, expresion,
+								contenido.getLineAtOffset(writeRangeS) + 1, true, false);
+//						System.out.println(styleClass + " -> analizadores <" + expresion + ">");
+					} else {
+						lex = ctrl.evaluar(true, false, tipoDeDatoEsperado, expresion,
+								contenido.getLineAtOffset(writeRangeS) + 1, false, false);
+//						System.out.println(styleClass + " -> analizadores <" + expresion + ">");
+					}
+
+					if (lex) {
+						estilizarExpresiones(ar, "expressionCorrecta", getLineAtOffset(matcher.start()));
+					} else {
+						estilizarExpresiones(ar, "expressionIncorrecta", getLineAtOffset(matcher.start()));
+						error = true;
+					}
+
+					if (matcher.group().contains("veces")) {
+						ciclos++;
+						ctrl.agregarVariable("repetir" + ciclos, "E");
+						ar.add(new StyleRange("keyword", matcher.start() + 2, 5, null, null));
+					}
+					writeRangeS = 0;
+					writeRangeE = 0;
+					parentesisDeBloque = false;
+					keywordBloque = false;
+				}
+			} else if (styleClass.equals("cierrebloque")) {
+				menu.insertarRangoBloques(pilaBloqueRangos.peek());
+				pilaBloqueRangos.pop();
+				menu.insertarRangoBloques(matcher.end());
+
+			} else if (styleClass.equals("comentario")) {
+				// writeRanges.add(matcher.start() + 3);
+				// writeRanges.add(matcher.end() - 3);
+				ar.add(new StyleRange("comentario", matcher.start(), matcher.end() - matcher.start(), null, null));
+			} else if (styleClass.equals("escribir")) {
+				if (matcher.group().contains("escribir")) {
+					if (writeRangeS == 0) {
+						writeRangeS = matcher.end();
+						ar.add(new StyleRange("keyword", matcher.start(), matcher.end() - matcher.start(), null, null));
+						estaEnMetodo = true;
+					}
+				} else {
+					if (writeRangeE == 0) {
+						writeRangeE = matcher.start();
+						// writeRanges.add(writeRangeS);
+						// writeRanges.add(writeRangeE);
+						String linea = codigo.substring(writeRangeS + 1, writeRangeS + (writeRangeE - writeRangeS));
+						boolean lex = ctrl.evaluar(true, false, "T", linea, contenido.getLineAtOffset(writeRangeS) + 1,
+								false, true);
+
+						if (lex) {
+							ar.add(new StyleRange("expressionCorrecta", writeRangeS, writeRangeE - writeRangeS, null,
+									null));
+						} else {
+							ar.add(new StyleRange("expressionIncorrecta", writeRangeS, writeRangeE - writeRangeS, null,
+									null));
+							error = true;
+						}
+
+						ar.add(new StyleRange("keyword", matcher.start(), matcher.end() - matcher.start() - 1, null,
+								null));
+						writeRangeS = 0;
+						writeRangeE = 0;
+						estaEnMetodo = false;
+					}
+				}
+			} else if (styleClass.equals("leer")) {
+				// writeRanges.remove(writeRanges.size() - 1);
+				writeRangeS = 0;
+				writeRangeE = 0;
+				asignacion = false;
+				ar.add(new StyleRange("keyword", matcher.start(), matcher.end() - matcher.start() - 1, null, null));
+			}
+		}
+		ARR = ar.toArray(ARR);
+		this.setStyleRanges(ARR);
+	}

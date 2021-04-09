@@ -1,15 +1,17 @@
 package logica;
 
 public class NodoSecuenciador {
-	int numeroInstruccion,salto, numeroDeLinea;
-	String instruccion, tipo;
+	int numeroInstruccion, salto, numeroDeLinea;
+//	String instruccion;
+	String tipo;
+	ExpresionesLinea expresiones;
 
-	public NodoSecuenciador(int numeroInstruccion, String instruccion,  String tipo, int numeroDeLinea) {
+	public NodoSecuenciador(int numeroInstruccion, ExpresionesLinea expresiones, String tipo, int numeroDeLinea) {
 		this.numeroInstruccion = numeroInstruccion;
-		this.instruccion = instruccion;
+		this.expresiones = expresiones;
 		this.salto = 0;
-		this.tipo= tipo;
-		this.numeroDeLinea= numeroDeLinea+1;
+		this.tipo = tipo;
+		this.numeroDeLinea = numeroDeLinea + 1;
 	}
 
 	public int getNumeroInstruccion() {
@@ -18,14 +20,6 @@ public class NodoSecuenciador {
 
 	public void setNumeroInstruccion(int numeroInstruccion) {
 		this.numeroInstruccion = numeroInstruccion;
-	}
-
-	public String getInstruccion() {
-		return instruccion;
-	}
-
-	public void setInstruccion(String instruccion) {
-		this.instruccion = instruccion;
 	}
 
 	public int getSalto() {
@@ -51,5 +45,20 @@ public class NodoSecuenciador {
 	public void setNumeroDeLinea(int numeroDeLinea) {
 		this.numeroDeLinea = numeroDeLinea;
 	}
-	
+
+	public ExpresionesLinea getExpresiones() {
+		return expresiones;
+	}
+
+	public void setExpresiones(ExpresionesLinea expresiones) {
+		this.expresiones = expresiones;
+	}
+
+	public String toString() {
+		
+		return (new StringBuilder()).append(this.numeroInstruccion).append("\t|").append(this.numeroDeLinea)
+				.append("|\t").append(this.expresiones.getPrimeraParte()).append("\t")
+				.append(this.expresiones.getSegundaParte()).append("\t").append(this.salto).append("\t")
+				.append(this.tipo).append("\t").append(this.expresiones.getTipo()).append("\n").toString();
+	}
 }

@@ -26,28 +26,6 @@
 .escribir{
 	-fx-background-color:#004B8D;
 	-styled-text-color: rgb(255,255,255);
-	/** claro: #CDEDFF;*/
-	
-	/**-fx-background-color: rgb(116, 185, 255);
-	 * 
-	 *CONJUNTO DE AZULES
-	 * rgb(106, 137, 204) 
-	 * rgb(74, 105, 189)
-	 * 
-	 *BLANCO LETRAS
-	 * -styled-text-color: rgb(255,255,255);
-	 * 
-	 *AZUL CLARO
-	 * rgb(116, 185, 255);
-	 *rgb(9, 132, 227); 
-	 * 
-	 * 
-	 *VALENTINA
-	 *OSCURO: 2, 51, 115
-	 *CLARO: 148, 189, 242
-	 * 
-	 *-styled-text-color: rgb(255,255,255);
-	 **/
 }
 
 .escribirLimite{
@@ -55,47 +33,23 @@
 	-styled-text-color: rgb(255,255,255);
 }
 
-/* 
- *.expressionIncorrecta{
-	-styled-text-color: rgb(255,0,0);
-	-fx-border-color: red;
-    -fx-border-width: 0 0 1 0;
-    -fx-underline: true;
-    -fx-padding: 0 0 -1 0;
-}
 .expressionCorrecta{
-	-styled-text-color: rgb(0,255,0);
-	-fx-border-color: green;
-    -fx-border-width: 0 0 1 0;
-    -fx-underline: true;
-    -fx-padding: 0 0 -1 0;
-} 
- */
-
-
-.expressionCorrecta{
-	/* 
-	 *-fx-background-color: rgb(173, 216, 230); 
-	 *  -fx-background-color: rgb(135, 206, 250);
-	 *
-	 */
 	 -fx-background-color: rgb(163, 231, 214);
 	-styled-text-color: rgb(0,0,0);
 	
 }
 
 .expressionCorrectaLimite{
-	/* 
-	 *-fx-background-color: rgb(173, 216, 230); 
-	 *  -fx-background-color: rgb(135, 206, 250);
-	 *
-	 */
 	 -fx-background-color: rgb(93, 155, 155);
 	-styled-text-color: rgb(0,0,0);
 }
 .expressionIncorrecta{
 	-fx-background-color: rgb(255, 204, 103);
 	-styled-text-color: rgb(0,0,0);
+}
+
+.ejecucion{
+	 -fx-background-color: rgb(179, 216, 253);
 }
 
 .expressionIncorrectaLimite{
@@ -107,7 +61,15 @@
 }
 
 .rectangulo-titular{
-	-fx-fill: rgb(106, 137, 204) ;
+	-fx-fill: rgb(0, 0, 128) ;
+}
+
+.label-titular-entrada{
+	-fx-text-fill: #FFFFFF;
+}
+
+.rectangulo-titular-entrada{
+	-fx-fill: rgb(104, 0, 104) ;
 }
 
 .comentario{
@@ -115,25 +77,23 @@
 }
 
 .rectangulo{
-	
 	-fx-fill: white ;
-	
 }
-/*.rectangle{
-	-fx-border-color: green;
-    -fx-border-width: 0 0 1 0;
-    -fx-underline: true;
-    -fx-padding: 0 0 -1 0;
-}
--fx-border-style: none solid none solid;
-    -fx-border-width: 0.2;
-    -fx-border-color: rgb(106, 137, 204) ;
-   
-*/
+
 .margen{
 	-fx-padding: 16 0 0 0;
     -fx-border-insets: 16 0 0 0;
     -fx-background-insets:16 0 0 0;
+}
+
+.button{
+	-fx-text-box-border: transparent;
+	-fx-focus-color: transparent;
+	-fx-background-color: white;
+	-fx-border-color: white;
+	-fx-background-insets: 0;
+    -fx-padding: 0 3 0 3;
+    -fx-cursor: hand;
 }
 
 .text-field{
@@ -152,3 +112,91 @@
 	-fx-border-color:rgb(232, 242,254);
 	-fx-font-weight: bold
 }
+
+.ejecutar-boton {
+    -icon-paint: green;
+    -fx-background-color: -icon-paint;
+    -size: 24;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+
+    -fx-shape: "M112 111v290c0 17.44 17 28.52 31 20.16l247.9-148.37c12.12-7.25 12.12-26.33 0-33.58L143 90.84c-14-8.36-31 2.72-31 20.16z";
+}
+
+.ejecutar-boton:hover {
+    /*-icon-paint: linear-gradient(to bottom, green, black);*/
+}
+
+.parar-boton {
+    -icon-paint: red;
+     -fx-background-color: -icon-paint;
+    -size: 24;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+}
+
+.parar-boton:hover {
+    -icon-paint: linear-gradient(to bottom, red, black);
+}
+
+.tabs{
+	-fx-background-color: white;
+}
+
+.discrepancia{
+	-fx-background-color: rgb(255, 135, 132);
+}
+
+#segundos{
+	-fx-border-color: black;
+	-fx-border-width: 0.1em;	
+}
+
+#registro{
+	-fx-text-box-border: transparent;
+	-fx-focus-color: transparent;
+	-fx-background-color: white;
+	-fx-border-color: white;
+	-fx-background-insets: 0;
+    -fx-padding: 0 3 0 3;
+    -fx-pref-height: 10;
+    -fx-font-size: 8pt; 
+} 
+
+/*
+ * 
+ .ejecutar-boton {
+    -fx-content-display: graphic-only;
+    -icon-paint:rgb(46, 186, 64);
+}
+
+
+.ejecutar-boton .ejecutar-icono {
+    -fx-background-color: -icon-paint;
+    -size: 17;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M112 111v290c0 17.44 17 28.52 31 20.16l247.9-148.37c12.12-7.25 12.12-26.33 0-33.58L143 90.84c-14-8.36-31 2.72-31 20.16z";
+}
+
+.parar-boton {
+    -fx-content-display: graphic-only;
+    -icon-paint:rgb(252, 99, 93);
+}
+
+
+.parar-boton .parar-icono {
+    -fx-background-color: -icon-paint;
+    -size: 17;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+   }
+ */

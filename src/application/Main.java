@@ -2,21 +2,21 @@ package application;
 
 import controlador.Controlador;
 import javafx.application.Application;
+import javafx.geometry.HPos;
+import javafx.geometry.VPos;
 import javafx.stage.Stage;
 import logica.GestorDeArchivos;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.RowConstraints;
 
 /**
- * @author brandonrodriguez TODO: - Doble declaracion 
- * 			- Guardar y Cargar Archivos
- * 			- Secuenciador 
- * 			- Tabla de simbolos 
- * 			- Ejecutor 
- * 			- Manipulador de Errores 
- * 			- Presentacion (lecto-escritura IPO) 
- * 			- Prueba de escritorio
+ * 
+ * @author brandonrodriguez 
+ * 
  */
 
 public class Main extends Application  implements GestorDeArchivos{
@@ -40,7 +40,7 @@ public class Main extends Application  implements GestorDeArchivos{
 			ctrl= new Controlador();
 			
 			bs= new BarraSuperior(ctrl, primaryStage);
-			
+			ctrl.setBs(bs);
 			ts = new Tablas();
 	        ctrl.setTS(ts);
 	        
@@ -49,16 +49,33 @@ public class Main extends Application  implements GestorDeArchivos{
 	        
 			ec= new EditorCodigo(ctrl);
 			ctrl.setEC(ec);
+			ctrl.actualizarTablas();
 			
-			HBox areas= new HBox();
-			areas.getChildren().addAll(ec,ts, cs);
+			//HBox areas= new HBox();
+			GridPane areas = new GridPane();
 			
+			RowConstraints rc = new RowConstraints();
+            rc.setPercentHeight(100.);
+            rc.setValignment(VPos.BOTTOM);
+            areas.getRowConstraints().add(rc);
+			
+	        for (int i = 0 ; i < 3 ; i++) {
+	        	ColumnConstraints cc = new ColumnConstraints();
+		        cc.setHalignment(HPos.CENTER);
+		        cc.setPercentWidth(33.333);
+		        areas.getColumnConstraints().add(cc);
+	        }
+	        
+	        areas.add(ec, 0, 0);
+	        areas.add(ts, 1, 0);
+	        areas.add(cs, 2, 0);
+	       
 			root.setCenter(areas);
 			root.setTop(new HBox(bs));
-			
+			primaryStage.setTitle("TestDesk");
 			primaryStage.setScene(scene);
 			primaryStage.show();
-
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

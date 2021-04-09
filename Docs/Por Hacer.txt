@@ -1,0 +1,19 @@
+POR HACER: 
+
+* Ajustar remoción de espacios
+	|_____________ asignación, declaración y juntos
+	|_____________ Parentesis
+
+* Reparar limites de escritura verdes
+	|______________ En adición de espacios (solo dos)
+
+* Verificar ejecución
+	|_______________ Probar con estructuras independientes
+
+* Verificar errores descritos
+	|_______________ Anotar y probar 
+	|_______________ Error de numero negativo en ciclo
+
+* Remover impresiones de DEBUG
+* Ocultar funciones Registro y manual
+

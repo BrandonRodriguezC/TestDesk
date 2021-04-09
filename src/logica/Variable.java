@@ -3,21 +3,22 @@ package logica;
 public class Variable {
 	String valor, nombre, tipo;
 
+	
 	public Variable(String valor, String tipo, String nombre) {
-		if(nombre != null && valor != null) {
+		if(!valor.isEmpty() && !nombre.isEmpty()) {
 			this.valor = valor;
 			this.tipo = tipo;
 			this.nombre=nombre;
-		}else if (nombre == null && valor != null) {
+		}else if (!valor.isEmpty() && nombre.isEmpty()) {
 			this.valor = valor;
 			this.tipo = tipo;
 			this.nombre="AUX";
-		}else if (nombre != null && valor == null) {
+		}else if (valor.isEmpty() && !nombre.isEmpty()) {
 			this.tipo = tipo;
-			valor = (tipo =="E") ? "1":
-				    (tipo =="R")? "1.0":
-					(tipo =="T")? "": "falso";
 			this.nombre=nombre;
+			this.valor = (tipo.equals("E")) ? "0":
+				    (tipo.equals("R"))? "0.0":
+					(tipo.equals("T"))? "": "falso";
 		}
 	}
 	
