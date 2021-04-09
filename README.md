@@ -1,4 +1,4 @@
-# TestDesk v 1.0.2
+# TestDesk v 0.8.0
 Version de prueba de TestDesk: Software de aprendizaje de algoritmos estructurados
 
 # Descripción
@@ -42,9 +42,7 @@ Para instalar, simplemente descarga el *.jar* y empieza a usarlo **No habilitado
 
 ## Errores conocidos
 
-- Evaluación de expresiones inoperables (e.j 1/0)
-- Insercion de bloques en areas no validas/coherentes
-- Indentación equivoca (numero de tabulaciones incorrecto) >ocacional<
+- No registra
 
 ## Obteniendo ayuda
 
@@ -67,19 +65,13 @@ Actualmente las pruebas más vitales para la ejecución son Condicional.td y tab
 ## Commit
 
 ### Cambios
-- [ ] Ajustar estructura de declaracion por *tipo nombre;* o *tipo nombre, nombre, nombre;* 
-- [X] Cambio de keyword *decimal* por *real*
-- [X] Validacion de enteros y reales en tipo de dato *decimal/real*
-- [X] Cambio de keywords *true | false* por *veradero | falso*
-- [X] Ejecucion paso a paso 
+- Motor de estilos y correccion de espacios 
 
 ### Por hacer
-* Lectura de consola en ejecucion
-* Escritura de consola en ejecucion
-* Colores en errores e información
-* Revisar en evaluador el operador *=!* por *!=* 
-* Revisar operaciones (implementar *try and catch* para expresiones inoperables en ejecucion ~ e.j 1/0)
-
+* Correccion de errores
+* Adicion de funcion de registro
+* Adicion de estructura de algoritmo
+* Adicion de manual
 ----
 
 ## Creditos y referencias 
