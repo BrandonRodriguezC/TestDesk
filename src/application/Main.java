@@ -1,17 +1,26 @@
 package application;
 
+import java.util.Optional;
+
 import controlador.Controlador;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.stage.Stage;
 import logica.GestorDeArchivos;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.VBox;
 
 /**
  * 
@@ -51,7 +60,6 @@ public class Main extends Application  implements GestorDeArchivos{
 			ctrl.setEC(ec);
 			ctrl.actualizarTablas();
 			
-			//HBox areas= new HBox();
 			GridPane areas = new GridPane();
 			
 			RowConstraints rc = new RowConstraints();
@@ -69,9 +77,10 @@ public class Main extends Application  implements GestorDeArchivos{
 	        areas.add(ec, 0, 0);
 	        areas.add(ts, 1, 0);
 	        areas.add(cs, 2, 0);
-	       
+	  
+	        
 			root.setCenter(areas);
-			root.setTop(new HBox(bs));
+			root.setTop(new VBox( bs));
 			primaryStage.setTitle("TestDesk");
 			primaryStage.setScene(scene);
 			primaryStage.show();

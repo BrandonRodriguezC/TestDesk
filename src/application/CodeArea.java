@@ -18,21 +18,22 @@ import javafx.scene.input.KeyCode;
 
 public class CodeArea extends StyledTextArea {
 
-	private boolean declaracion = false, declaracionAsignacion = false, parentesisDeBloque = false, asignacion = false,
-			keywordBloque = false, estaEnMetodo = false, error;
-	private int caretOffset = 0, writeRangeS = 0, writeRangeE = 0, ciclos = 0, rangoDeEscrituraInicio1 = 0,
-			rangoDeEscrituraFin1 = 0, rangoDeEscrituraInicio2 = 0, 
-			rangoDeEscrituraFin2 = 0, lineaActual = 0, lineaAnterior = -1;
-	int ultimaLinea = 0;
+	private boolean  error, desarrollador;
+	private int ciclos = 0, 
+			rangoDeEscrituraInicio1 = 0, rangoDeEscrituraFin1 = 0, 
+			rangoDeEscrituraInicio2 = 0, rangoDeEscrituraFin2 = 0, 
+			lineaActual = 0, lineaAnterior = -1;
+	
 	StyleRange[] estilosDeUltimaLinea = null;
 	StyleRange[] estiloEjecucion = new StyleRange[1];
 	ArrayList<StyleRange> estilos;
+	ArrayList<String> informacion;
+	ArrayList<String> estructura;
 	int ultimoTamañoNumeroDeRepetir = -1;
 	int camposEstilados = 0;
 
 
 	private StyleRange ARR[];
-	private String tipoDeDatoEsperado;
 	private InsertMenu menu;
 	private Stack<Integer> pilaBloqueRangos;
 	private Controlador ctrl;
@@ -59,6 +60,7 @@ public class CodeArea extends StyledTextArea {
 	public CodeArea(Controlador ctrl) {
 
 		this.ctrl = ctrl;
+		desarrollador=false;
 		menu = new InsertMenu(this);
 		setContextMenu(menu);
 		setLineRulerVisible(true);
@@ -95,6 +97,7 @@ public class CodeArea extends StyledTextArea {
 		});
 
 		ctrl.presentarErrores(null, "as");
+		
 	}
 
 	/**
@@ -119,8 +122,7 @@ public class CodeArea extends StyledTextArea {
 		ctrl.limpiarErrores();
 		limpiarRangosBloques();
 		lineaActual = getContent().getLineAtOffset(getCaretOffset());
-		
-		correcionEspacios_AsignacionCamposEscritura();
+		//correcionEspacios_AsignacionCamposEscritura();
 		lineaAnterior = lineaActual;
 		actualizarRangoEscritura();
 		actualizarEstilos();
@@ -138,9 +140,15 @@ public class CodeArea extends StyledTextArea {
 		pilaBloqueRangos = new Stack<Integer>();
 		System.out.println();
 		ciclos=0;
+		error = false;
+		
+		estructura.add("INICIO");
+		
 		for (int i = 0; i < numeroLineas; i++) {
 			estilizarLinea(contenido.getLine(i),i);
 		}
+		
+		ctrl.presentarEstructura(estructura);
 		ARR = estilos.toArray(ARR);
 		setStyleRanges(ARR);
 	}
@@ -148,8 +156,6 @@ public class CodeArea extends StyledTextArea {
 	public void estilizarLinea(String linea, int numeroLinea) {
 		if (!linea.isEmpty()) {
 			Matcher comparador = PATTERN.matcher(linea);
-			
-			
 			
 			int inicioExpresion=-1, finExpresion=-1, tipo_expresion_int = 0;
 			String expresion1="", expresion2="";
@@ -183,8 +189,7 @@ public class CodeArea extends StyledTextArea {
 			
 			
 			if (tipo_expresion_int != -1) {
-				
-				System.out.println(numeroLinea+"\t|_ "+tipo_expresion_str);
+				estructura.add(numeroLinea+"\t|_ "+tipo_expresion_str);
 				int offsetLinea = getOffsetAtLine(numeroLinea);
 				int asignacion = 0;
 				while (comparador.find()) {
@@ -279,7 +284,8 @@ public class CodeArea extends StyledTextArea {
 				}
 				
 				if (!expresion1.isEmpty()) {
-					System.out.println(numeroLinea+" \t|\t|__\tExpresion 1: "+ expresion1);
+					estructura.add(numeroLinea+" \t|\t|__\tExpresion 1: "+ expresion1);
+					
 					if(tipo_expresion_int == 0) {
 						tipo_variable_esperado = ctrl.encontrarTipoParaIdentificador(expresion1.trim());
 					}
@@ -288,7 +294,7 @@ public class CodeArea extends StyledTextArea {
 					estilizarExpresiones(estilos, resultado, numeroLinea);
 				}
 				if(!expresion2.isEmpty()) {
-					System.out.println(numeroLinea+" \t|\t|__\tExpresion 2: "+ expresion2);
+					estructura.add(numeroLinea+" \t|\t|__\tExpresion 2: "+ expresion2);
 					
 					if(tipo_expresion_int == 0|| tipo_expresion_int == 1) {
 						tipo_variable_esperado = ctrl.encontrarTipoParaIdentificador(expresion1.trim());
@@ -297,14 +303,14 @@ public class CodeArea extends StyledTextArea {
 					boolean resultado= analisisExpresion(tipo_expresion_int, 2, expresion2, tipo_variable_esperado, numeroLinea);
 					estilizarExpresiones(estilos, resultado, numeroLinea);
 				}
-				System.out.println(numeroLinea+" \t|\t\t");
+				estructura.add(numeroLinea+" \t|\t\t");
 			}
 		}
 		
 		Collections.sort(estilos, (a, b) -> a.start < b.start ? -1 : a.start == b.start ? 0 : 1);
 		camposEstilados=0;
 	}
-
+	
 	public boolean analisisExpresion(int tipo_expresion, int campo, String expresion, String tipo_variable_esperado, int numero_linea) {
 		boolean resultado=false;
 		
@@ -343,6 +349,10 @@ public class CodeArea extends StyledTextArea {
 		}else if (tipo_expresion == 4) {
 			resultado = ctrl.evaluar(true, false, "T", expresion, numero_linea, false, true);
 		}
+		if (resultado==false) {
+			error=true;
+		}
+		
 		return resultado;
 	}
 
@@ -383,7 +393,7 @@ public class CodeArea extends StyledTextArea {
 				if (lineaAnterior != -1) {
 					String ultimaLineaEditada ;
 					try {
-						ultimaLineaEditada = stc.getLine(stc.getLineAtOffset(caretOffset));
+						ultimaLineaEditada = stc.getLine(lineaAnterior);
 					} catch (Exception e) {
 						ultimaLineaEditada="";
 					}
@@ -496,26 +506,31 @@ public class CodeArea extends StyledTextArea {
 				sb.deleteCharAt(codigo.lastIndexOf("\n"));
 				stc.setText(sb.toString());
 			}
-
-			caretOffset = getCaretOffset();
 		}
 	}
 
 	//*****************
 	
 	public void actualizarRangoEscritura() {
-		System.out.println("################# RANGO ESCRITURA #####################");
+		estructura = new ArrayList<>();
+		
+		estructura.add("################ ESTRUCTURA #################");
+		
 		String linea = getContent().getLine(lineaActual);
 		StringBuilder sb = new StringBuilder(linea);
 		
 		if (linea.matches("(\t+)?(\s+)?.*(\s+)?\\=.*\\;")
 				&& linea.matches("((?!(entero|logico|real|texto)).)*")) {
-			System.out.println("ASIGNACION");
+			
+			estructura.add("ASIGNACION");
+			
 			int tabs = (int) linea.chars().filter(ch -> ch == '\t').count();
 			añadirRangoEscritura(getOffsetAtLine(lineaActual) + tabs, getOffsetAtLine(lineaActual) + sb.indexOf("="), 1);
 			añadirRangoEscritura(getOffsetAtLine(lineaActual) + sb.indexOf("="), getOffsetAtLine(lineaActual) + sb.indexOf(";"), 2);
 		}else if (linea.matches("(\t+)?(\s+)?(entero|logico|real|texto)(\s+)?.*(\s+)?\\=.*\\;")) {
-			System.out.println("DECLARACION Y ASIGNACION");
+			
+			estructura.add("DECLARACION Y ASIGNACION");
+			
 			String tipo = "entero";
 			if (linea.contains("real")) {
 				tipo = "real";
@@ -527,7 +542,9 @@ public class CodeArea extends StyledTextArea {
 			añadirRangoEscritura(getOffsetAtLine(lineaActual) + sb.indexOf(tipo) + tipo.length() + 1, getOffsetAtLine(lineaActual) + sb.indexOf("="), 1);
 			añadirRangoEscritura(getOffsetAtLine(lineaActual) + sb.indexOf("="), getOffsetAtLine(lineaActual) + sb.indexOf(";"), 2);
 		}else if (linea.matches("(\t+)?(\s+)?(entero|logico|real|texto)(\s+)?.*(\s+)?\\;")) {
-			System.out.println("DECLARACION");
+			
+			estructura.add("DECLARACION");
+			
 			String tipo = "entero";
 			if (linea.contains("real")) {
 				tipo = "real";
@@ -538,16 +555,21 @@ public class CodeArea extends StyledTextArea {
 			}
 			añadirRangoEscritura(getOffsetAtLine(lineaActual) + sb.indexOf(tipo) + tipo.length(), getOffsetAtLine(lineaActual) + sb.indexOf(";"), 1);
 		}else if (linea.matches("(\t+)?(si |mientras que |repetir )(\\().*(\\))(\s+)?(veces)?")) {
-			System.out.println("BLOQUE");
+			
+			estructura.add("BLOQUE");
+			
 			añadirRangoEscritura(getOffsetAtLine(lineaActual) + sb.indexOf("("), getOffsetAtLine(lineaActual) + sb.indexOf(")"), 1);
 		}else if (linea.matches("(\t+)?(escribir|leer)(\\().*(\\))\\;")) {
-			System.out.println("METODO");
+			
+			estructura.add("METODO");
+			
 			añadirRangoEscritura(getOffsetAtLine(lineaActual) + sb.indexOf("("), getOffsetAtLine(lineaActual) + sb.indexOf(")"), 1);
 		}
 	}
 
 	public void añadirRangoEscritura(int inicio, int fin, int campo) {
-		System.out.println("\t\tRango de escritura " + lineaActual + " :" + inicio + " - " + fin);
+		estructura.add("\t\tRango de escritura " + lineaActual + " :" + inicio + " - " + fin);
+		
 		if (campo == 1) {
 			rangoDeEscrituraInicio1 = inicio;
 			rangoDeEscrituraFin1 = fin;
@@ -589,231 +611,6 @@ public class CodeArea extends StyledTextArea {
 		getContent().setText(buf.toString());
 	}
 	
-//	public void update() {
-//		System.out.println("############## UPDATE ##################");
-//		error = false;
-//		ciclos = 0;
-//		
-//		StyledTextContent contenido = getContent();
-//		String codigo = getCode(contenido);
-//		Matcher matcher = PATTERN.matcher(codigo);
-//		ArrayList<StyleRange> ar = new ArrayList<StyleRange>();
-//
-//		pilaBloqueRangos = new Stack<Integer>();
-//
-//		ARR = new StyleRange[0];
-//		
-//		while (matcher.find()) {
-//
-//			String styleClass = matcher.group("KEYWORD") != null ? "keyword"
-//							: matcher.group("PARENTESIS") != null ? "brace"
-//							: matcher.group("TIPODEDATO") != null ? "tipodedato"
-//							: matcher.group("ASIGNACION") != null ? "asignacion"
-//							: matcher.group("COMENTARIO") != null ? "comentario"
-//							: matcher.group("CIERRE") != null ? "cierre"
-//							: matcher.group("CIERREBLOQUE") != null ? "cierrebloque"
-//							: matcher.group("APERTURABLOQUE") != null ? "aperturabloque"
-//							: matcher.group("ESCRIBIR") != null ? "escribir"
-//							: matcher.group("LEER") != null ? "leer"
-//							: null;
-//			assert styleClass != null;
-//
-////			System.out.println(styleClass + ":\t"+ matcher.group());
-//
-//			if (styleClass.equals("tipodedato")) {
-//				if (writeRangeS == 0) {
-//					writeRangeS = matcher.end() + 1;
-//					// writeRanges.add(writeRangeS + 1);
-//					declaracionAsignacion = true;
-//					declaracion = true;
-//					tipoDeDatoEsperado = Character.toUpperCase(matcher.group().charAt(0)) + "";
-//					ar.add(new StyleRange("keyword", matcher.start(), matcher.end() - matcher.start(), null, null));
-//					System.out.println("Estilo keyword: " + matcher.start() + "-" + matcher.end());
-//				}
-//				
-//			} else if (styleClass.equals("keyword")) {
-//				
-//				if (!declaracion && !declaracionAsignacion && !asignacion) {
-//					keywordBloque = true;
-//					ar.add(new StyleRange("keyword", matcher.start(), matcher.end() - matcher.start(), null, null));
-//					if (matcher.group().equals("repetir")) {
-//						tipoDeDatoEsperado = "E";
-//					} else if (matcher.group().equals("si ") || matcher.group().equals("mientras que")) {
-//						tipoDeDatoEsperado = "L";
-//					}
-//				}
-//				
-//			} else if (styleClass.equals("asignacion")) {
-//				
-//				declaracion = false;
-//				
-//				if (!estaEnMetodo) {
-//					if (writeRangeS == 0) {
-//						int lineActual = contenido.getLineAtOffset(matcher.start());
-//						writeRangeS = contenido.getOffsetAtLine(lineActual) + (int) contenido.getLine(lineActual).chars().filter(ch -> ch == '\t').count();
-//						declaracionAsignacion = false;
-//					}
-//					
-//					if (writeRangeE == 0 && parentesisDeBloque == false) {
-//						writeRangeE = matcher.start();
-//						String expresion = codigo.substring(writeRangeS, writeRangeS + (writeRangeE - writeRangeS));
-//						
-//						if (!declaracionAsignacion) {
-//							tipoDeDatoEsperado = ctrl.encontrarTipoParaIdentificador(expresion.trim());
-//						}
-//						
-//						System.out.println(styleClass + " -> analizadores <" + expresion + ">");
-//						
-//						boolean lex = ctrl.evaluar(false, declaracionAsignacion, tipoDeDatoEsperado, expresion,
-//								contenido.getLineAtOffset(writeRangeS) + 1, false, false);
-//						
-//						if (lex) {
-//							estilizarExpresiones(ar, "expressionCorrecta", getLineAtOffset(matcher.start()));
-//						} else {
-//							estilizarExpresiones(ar, "expressionIncorrecta", getLineAtOffset(matcher.start()));
-//							error = true;
-//						}
-//						
-//						asignacion = true;
-//						writeRangeS = matcher.end();
-//					}
-//				}
-//				
-//			} else if (styleClass.equals("cierre")) {
-//				if (writeRangeS != 0) {
-//					writeRangeE = matcher.end();
-//					boolean lex = false;
-//					String expresion = codigo.substring(writeRangeS, writeRangeS + (writeRangeE - writeRangeS - 1));
-//					if (declaracion) {
-//						lex = ctrl.evaluar(true, true, tipoDeDatoEsperado, expresion,
-//								contenido.getLineAtOffset(writeRangeS) + 1, false, false);
-////						System.out.println(styleClass + " -> analizadores <" + expresion + ">");
-//					} else if (declaracionAsignacion) {
-//						lex = ctrl.evaluar(false, false, tipoDeDatoEsperado, expresion,
-//								contenido.getLineAtOffset(writeRangeS) + 1, false, false);
-////						System.out.println(styleClass + " -> analizadores <" + expresion + ">");
-//					} else {
-//						lex = ctrl.evaluar(true, false, tipoDeDatoEsperado, expresion,
-//								contenido.getLineAtOffset(writeRangeS) + 1, false, false);
-////						System.out.println(styleClass + " -> analizadores <" + expresion + ">");
-//					}
-//
-//					if (lex) {
-//						estilizarExpresiones(ar, "expressionCorrecta", getLineAtOffset(matcher.start()));
-//					} else {
-//						estilizarExpresiones(ar, "expressionIncorrecta", getLineAtOffset(matcher.start()));
-//						error = true;
-//					}
-//
-//				}
-//				writeRangeE = 0;
-//				writeRangeS = 0;
-//				asignacion = false;
-//				declaracionAsignacion = false;
-//				declaracion = false;
-//
-//			} else if (styleClass.equals("aperturabloque")) {
-//				pilaBloqueRangos.add(matcher.end());
-//
-//				// pilaBloqueRangos.add(menu.eliminarUltimoRango());
-//
-//			} else if (styleClass.equals("brace")) {
-//				if (matcher.group().equals("(") && parentesisDeBloque == false && asignacion == false
-//						&& keywordBloque == true) {
-//					if (writeRangeS == 0) {
-//						writeRangeS = matcher.start();
-//						// writeRanges.add(writeRangeS);
-//						parentesisDeBloque = true;
-//					}
-//				} else if (!matcher.group().equals("(") && keywordBloque == true) {
-//					writeRangeE = matcher.start();
-//					// writeRanges.add(writeRangeE);
-//					String expresion = codigo.substring(writeRangeS + 1, writeRangeS + (writeRangeE - writeRangeS));
-//					pilaBloqueRangos.add(matcher.end());
-//
-//					boolean lex = false;
-//					if (tipoDeDatoEsperado.equals("E")) {
-//						lex = ctrl.evaluar(false, false, tipoDeDatoEsperado, expresion,
-//								contenido.getLineAtOffset(writeRangeS) + 1, true, false);
-////						System.out.println(styleClass + " -> analizadores <" + expresion + ">");
-//					} else {
-//						lex = ctrl.evaluar(true, false, tipoDeDatoEsperado, expresion,
-//								contenido.getLineAtOffset(writeRangeS) + 1, false, false);
-////						System.out.println(styleClass + " -> analizadores <" + expresion + ">");
-//					}
-//
-//					if (lex) {
-//						estilizarExpresiones(ar, "expressionCorrecta", getLineAtOffset(matcher.start()));
-//					} else {
-//						estilizarExpresiones(ar, "expressionIncorrecta", getLineAtOffset(matcher.start()));
-//						error = true;
-//					}
-//
-//					if (matcher.group().contains("veces")) {
-//						ciclos++;
-//						ctrl.agregarVariable("repetir" + ciclos, "E");
-//						ar.add(new StyleRange("keyword", matcher.start() + 2, 5, null, null));
-//					}
-//					writeRangeS = 0;
-//					writeRangeE = 0;
-//					parentesisDeBloque = false;
-//					keywordBloque = false;
-//				}
-//			} else if (styleClass.equals("cierrebloque")) {
-//				menu.insertarRangoBloques(pilaBloqueRangos.peek());
-//				pilaBloqueRangos.pop();
-//				menu.insertarRangoBloques(matcher.end());
-//
-//			} else if (styleClass.equals("comentario")) {
-//				// writeRanges.add(matcher.start() + 3);
-//				// writeRanges.add(matcher.end() - 3);
-//				ar.add(new StyleRange("comentario", matcher.start(), matcher.end() - matcher.start(), null, null));
-//			} else if (styleClass.equals("escribir")) {
-//				if (matcher.group().contains("escribir")) {
-//					if (writeRangeS == 0) {
-//						writeRangeS = matcher.end();
-//						ar.add(new StyleRange("keyword", matcher.start(), matcher.end() - matcher.start(), null, null));
-//						estaEnMetodo = true;
-//					}
-//				} else {
-//					if (writeRangeE == 0) {
-//						writeRangeE = matcher.start();
-//						// writeRanges.add(writeRangeS);
-//						// writeRanges.add(writeRangeE);
-//						String linea = codigo.substring(writeRangeS + 1, writeRangeS + (writeRangeE - writeRangeS));
-//						boolean lex = ctrl.evaluar(true, false, "T", linea, contenido.getLineAtOffset(writeRangeS) + 1,
-//								false, true);
-//
-//						if (lex) {
-//							ar.add(new StyleRange("expressionCorrecta", writeRangeS, writeRangeE - writeRangeS, null,
-//									null));
-//						} else {
-//							ar.add(new StyleRange("expressionIncorrecta", writeRangeS, writeRangeE - writeRangeS, null,
-//									null));
-//							error = true;
-//						}
-//
-//						ar.add(new StyleRange("keyword", matcher.start(), matcher.end() - matcher.start() - 1, null,
-//								null));
-//						writeRangeS = 0;
-//						writeRangeE = 0;
-//						estaEnMetodo = false;
-//					}
-//				}
-//			} else if (styleClass.equals("leer")) {
-//				// writeRanges.remove(writeRanges.size() - 1);
-//				writeRangeS = 0;
-//				writeRangeE = 0;
-//				asignacion = false;
-//				ar.add(new StyleRange("keyword", matcher.start(), matcher.end() - matcher.start() - 1, null, null));
-//			}
-//		}
-//		ARR = ar.toArray(ARR);
-//		this.setStyleRanges(ARR);
-//	}
-
-	
-
 	public String getCode(StyledTextContent content) {
 		String original = "";
 		int lines = content.getLineCount();
@@ -823,7 +620,6 @@ public class CodeArea extends StyledTextArea {
 		return original;
 	}
 
-	
 	public void señalarLineaEnCodigo(int numeroDeLinea) {
 		numeroDeLinea--;
 		int offSetNumeroDeLinea = getOffsetAtLine(numeroDeLinea);
@@ -831,20 +627,19 @@ public class CodeArea extends StyledTextArea {
 
 		if (numeroDeLinea == 0) {
 			estilosDeUltimaLinea = getStyleRanges(numeroDeLinea, tamaño, true);
-			ultimaLinea = 0;
+			lineaAnterior = 0;
 		} else {
-			int offSetUltimoNumeroDeLinea = getOffsetAtLine(ultimaLinea);
+			int offSetUltimoNumeroDeLinea = getOffsetAtLine(lineaAnterior);
 			replaceStyleRanges(offSetUltimoNumeroDeLinea,
 					getContent().getLine(getLineAtOffset(offSetUltimoNumeroDeLinea)).length(), estilosDeUltimaLinea);
 			estilosDeUltimaLinea = getStyleRanges(offSetNumeroDeLinea, tamaño, true);
-			ultimaLinea = numeroDeLinea;
+			lineaAnterior = numeroDeLinea;
 		}
 
 		estiloEjecucion[0] = new StyleRange("ejecucion", offSetNumeroDeLinea, tamaño, null, null);
 		replaceStyleRanges(offSetNumeroDeLinea, tamaño, estiloEjecucion);
 		setCaretOffset(offSetNumeroDeLinea);
 	}
-
 	
 	/**
 	 * Documentación: En ejecución, actualiza la linea de los ciclos 'repetir' por
@@ -919,5 +714,14 @@ public class CodeArea extends StyledTextArea {
 		this.lineaAnterior = lineaAnterior;
 	}
 
+	public boolean isDesarrollador() {
+		return desarrollador;
+	}
+
+	public void setDesarrollador(boolean desarrollador) {
+		this.desarrollador = desarrollador;
+	}
+
+	
 }
 

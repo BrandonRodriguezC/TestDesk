@@ -107,8 +107,13 @@ public class Secuenciador {
 					stack.pop();
 				} else if (close.contains("si")) {
 
-					if (i + 1 < list.size() && vec[i + 1].contains("sino")) {
-						list.get(number).setSalto(count + 1);
+					if (i + 1 < vec.length) {
+						if( vec[i + 1].contains("sino")) {
+							
+							list.get(number).setSalto(count + 1);
+						} else {
+							list.get(number).setSalto(count );
+						}
 					} else {
 						list.get(number).setSalto(count );
 					}
@@ -145,12 +150,6 @@ public class Secuenciador {
 		ctrl.presentarErrores(textoLista(list), "sc");
 		return list;
 	}
-
-//	public void printCode(String vec[]) {
-//		for (int i = 0; i < vec.length; i++) {
-//			System.out.println(vec[i]);
-//		}
-//	}
 
 	public ArrayList<String> textoLista(ArrayList<NodoSecuenciador> list) {
 		NodoSecuenciador node;

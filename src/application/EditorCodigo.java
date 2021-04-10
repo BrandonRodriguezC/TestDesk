@@ -27,8 +27,6 @@ public class EditorCodigo extends TabPane {
 			}
 		});
 		
-		
-		
 		areasDeCodigo.add(areaCodigo);
 		getTabs().add(first);
 		setPrefWidth(400);
@@ -48,14 +46,9 @@ public class EditorCodigo extends TabPane {
 
 	public void ponerCodigo(String codigo) {
 		int indiceCodigoArea = getSelectionModel().getSelectedIndex();
-		System.out.println(indiceCodigoArea);
 		CodeArea aux = areasDeCodigo.get(indiceCodigoArea);
-		
-		//aux.setContent(null);
 		aux.getContent().setText(codigo);
-		aux.limpiarRangosBloques();
-//		aux.update();
-		aux.actualizarEstilos();
+		aux.limpiar_actualizar();
 	}
 
 	public int numeroPestañas() {
@@ -112,12 +105,7 @@ public class EditorCodigo extends TabPane {
 	public void actualizarEstilosEjecucion() {
 		int indiceCodigoArea = getSelectionModel().getSelectedIndex();
 		CodeArea aux = areasDeCodigo.get(indiceCodigoArea);
-		ctrl.limpiarErrores();
-		aux.limpiarRangosBloques();
-//		aux.update();
-		aux.actualizarEstilos();
-		ctrl.presentarErrores(null, "as");
-		ctrl.actualizarTablas();
+		aux.limpiar_actualizar();
 	}
 
 	public void actualizarRepetir(String numero, int linea) {

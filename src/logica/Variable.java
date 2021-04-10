@@ -2,7 +2,6 @@ package logica;
 
 public class Variable {
 	String valor, nombre, tipo;
-
 	
 	public Variable(String valor, String tipo, String nombre) {
 		if(!valor.isEmpty() && !nombre.isEmpty()) {

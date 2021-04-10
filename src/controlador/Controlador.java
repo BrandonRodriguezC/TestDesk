@@ -76,8 +76,8 @@ public class Controlador {
 				ec.setEjecucion(true);
 				bs.cambiarIconoEjecucion(true);
 				ec.actualizarEstilosEjecucion();
-				System.out.println(as.imprimirExpresionesPosfijas());
-				
+//				System.out.println(as.imprimirExpresionesPosfijas());
+				ej.setInfo(new ArrayList<String>());
 				ej.setInstrucciones(sc.secuenciar(this.tomarCodigo().replace("\t", "").split("\n"), as.getExpresionesPosfijas()));
 				ej.setTS(as.getTablaDeSimbolos());
 				actualizarTablas();
@@ -171,9 +171,9 @@ public class Controlador {
 		cs.limpiar();
 	}
 
-	public void analizadoresInformacion() {
-		as.informacion();
-	}
+//	public void analizadoresInformacion() {
+//		as.informacion();
+//	}
 
 	public void ejecutarAutomaticamente(int segundos) {
 		if (ec.getError()) {
@@ -184,19 +184,25 @@ public class Controlador {
 				bs.cambiarIconoEjecucion(false);
 				ec.actualizarEstilosEjecucion();
 			} else {
-				ec.setEjecucion(true);
-				bs.cambiarIconoEjecucion(true);
-				ec.actualizarEstilosEjecucion();
-				ej.setInstrucciones(sc.secuenciar(this.tomarCodigo().replace("\t", "").split("\n"), as.getExpresionesPosfijas()));
-				ej.setTS(as.getTablaDeSimbolos());
-				actualizarTablas();
-				ej.ejecutarAutomaticamente();
+				secuenciar();
+				ej.ejecutarAutomaticamente(segundos);
 			}
 			
 		}
 		
 	}
 	
+	public void presentarEstructura(ArrayList<String> estructura) {
+		cs.presentarEstructura(estructura);
+	}
+	
+	public void setDesarrolladorConsolas() {
+		cs.setDesarrollador(!cs.isDesarrollador());
+	}
+	
+//	public void setDesarrolladorEditorCodigo() {
+//		ec.setDesarrollador(!ec.isDesarrollador());
+//	}
 	
 	/**
 	 * ------------------------------------------------- GETTER & SETTERS

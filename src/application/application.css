@@ -113,35 +113,6 @@
 	-fx-font-weight: bold
 }
 
-.ejecutar-boton {
-    -icon-paint: green;
-    -fx-background-color: -icon-paint;
-    -size: 24;
-    -fx-min-height: -size;
-    -fx-min-width: -size;
-    -fx-max-height: -size;
-    -fx-max-width: -size;
-
-    -fx-shape: "M112 111v290c0 17.44 17 28.52 31 20.16l247.9-148.37c12.12-7.25 12.12-26.33 0-33.58L143 90.84c-14-8.36-31 2.72-31 20.16z";
-}
-
-.ejecutar-boton:hover {
-    /*-icon-paint: linear-gradient(to bottom, green, black);*/
-}
-
-.parar-boton {
-    -icon-paint: red;
-     -fx-background-color: -icon-paint;
-    -size: 24;
-    -fx-min-height: -size;
-    -fx-min-width: -size;
-    -fx-max-height: -size;
-    -fx-max-width: -size;
-}
-
-.parar-boton:hover {
-    -icon-paint: linear-gradient(to bottom, red, black);
-}
 
 .tabs{
 	-fx-background-color: white;
@@ -167,6 +138,18 @@
     -fx-font-size: 8pt; 
 } 
 
+
+.menu-bar {
+	-fx-background-color: #ffffff;
+    -fx-opacity: 1;
+    -fx-border-style: hidden hidden solid hidden; 
+    -fx-border-width: 0.3;
+    -fx-border-color:  rgb(0,64,255);
+    -fx-padding: 0 3 0 3;
+    -fx-pref-height:10px;
+    -fx-max-height: 10px;
+    -fx-font-size: 8pt; 
+}
 /*
  * 
  .ejecutar-boton {

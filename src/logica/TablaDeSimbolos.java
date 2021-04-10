@@ -6,7 +6,6 @@ import java.util.Hashtable;
 public class TablaDeSimbolos {
 
 	Hashtable<String, Variable> ts;
-	//Nuevo
 	ArrayList<String> variables;
 
 	public TablaDeSimbolos() {
@@ -40,7 +39,6 @@ public class TablaDeSimbolos {
 		ts.replace(llave, valor);
 	}
 
-	
 	/** Documentación: Filtra las variables repetir para su muestra en la tabladesimbolos **/
 	public ArrayList<String> elements() {
 		ArrayList<String> finalVariables = new ArrayList<String>();

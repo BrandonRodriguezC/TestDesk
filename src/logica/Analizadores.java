@@ -196,23 +196,19 @@ public class Analizadores {
 		return true;
 	}
 	
-	public void informacion() {
-		errores.add(imprimirTablaDeSimbolos());
-		errores.add("######################################");
-		errores.add(imprimirExpresionesPosfijas());
-		System.out.println(imprimirExpresionesPosfijas());
-		errores.add("######################################");
-	}
+//	public void informacion() {
+//		errores.add(imprimirTablaDeSimbolos());
+//		errores.add("######################################");
+//		errores.add(imprimirExpresionesPosfijas());
+//		System.out.println(imprimirExpresionesPosfijas());
+//		errores.add("######################################");
+//	}
 
 	public ArrayList<String> analizador(boolean compuesta, boolean declaracionAsignacion, String tipoDeVariable, String expresion,
 			int linea) {
 		Matcher comparador = PATRON.matcher(expresion);
 		int contador = 0, estado = 0, parentesis = 0, ultimoCaracterIdentificado = 0;
 		ArrayList<String> separado = new ArrayList<>();
-		//boolean subExpresion = false;
-		//String postFijo = "", subExpresionS = "";
-
-//		Stack<String> pila = new Stack<String>();
 
 		while (comparador.find()) {
 
@@ -519,7 +515,6 @@ public class Analizadores {
 //			System.out.println("Se añade tipo: "+expresion);
 			expresionesPosfijas.get(linea).setTipo(tipo);
 		}
-//		System.out.println("???????????????????????????????????????");
 	}
 	
 	public Hashtable<Integer, ExpresionesLinea> getExpresionesPosfijas() {
