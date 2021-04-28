@@ -5,6 +5,10 @@ import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 public class Analizadores {
 	private static final String ENTERO = "[0-9]+";
 	private static final String REAL = "[0-9]+\\.[0-9]+";
@@ -61,7 +65,7 @@ public class Analizadores {
 			añadirExpresionLinea(String.join(" ", pf), linea, tipoDeVariable);
 			
 		} else if (compuesta == true && declaracionAsignacion == false) {
-			
+//			System.out.println("Asignacion.........");
 			/** La segunda parte de una asignacion y una condicion sea while-for-if:
 			 *  
 			 *  ... = [ ]; 
@@ -83,7 +87,7 @@ public class Analizadores {
 			añadirExpresionLinea(posfija, linea, null);
 			errores.add((new StringBuilder()).append("POST FIJO --------> ").append(posfija).toString());
 			String rta = Evaluador.evaluarSemanticamente(posfija, tablaDeSimbolos);
-			
+//			System.out.println(rta);
 			errores.add((new StringBuilder()).append("INFO L").append(linea).append(": Se espera el tipo de dato <").append(tipoDeVariable).append("> y el tipo generado es <").append(rta).append(">").toString());
 			if (rta.equals("X")) {
 				errores.add("ERROR: Expresion no operable");
@@ -206,6 +210,14 @@ public class Analizadores {
 
 	public ArrayList<String> analizador(boolean compuesta, boolean declaracionAsignacion, String tipoDeVariable, String expresion,
 			int linea) {
+		ScriptEngineManager mgr = new ScriptEngineManager();
+	    ScriptEngine engine = mgr.getEngineByName("JavaScript");
+		try {
+		System.out.println(engine.eval(expresion));
+		} catch (ScriptException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Matcher comparador = PATRON.matcher(expresion);
 		int contador = 0, estado = 0, parentesis = 0, ultimoCaracterIdentificado = 0;
 		ArrayList<String> separado = new ArrayList<>();
@@ -304,18 +316,19 @@ public class Analizadores {
 			} else if (tipoDeDato.equals("IDENTIFICADOR") && estado != 1) {
 				String llave = tablaDeSimbolos.hash(comparador.group());
 				boolean estaEnTabla = tablaDeSimbolos.containsKey(llave);
-				
+//				System.out.println("Se evalua "+llave);
 				if (declaracionAsignacion) {
 					if (comparador.group().length() <= 15) {
 						if (!comparador.group().matches(PALABRAS_PROHIBIDAS)) {
 							if (!estaEnTabla) {
+//								System.out.println("Se añade "+llave);
 								tablaDeSimbolos.put(llave, new Variable("", tipoDeVariable, comparador.group()));
 								errores.add((new StringBuilder()).append("INFO L").append(linea).append(": Se añadio el identificador en la tabla\nde simbolos <").append(llave).append(":").append(tipoDeVariable).append(">").toString());
 								estado = 1;
 								separado.add(comparador.group());
 							
 							} else {
-								errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": El identificador ya fue declarado").toString());
+								errores.add((new StringBuilder()).append("ERROR L").append(linea).append(": El identificador ya fue declarado ").append(llave).toString());
 								return null;
 							}
 						}else {

@@ -28,9 +28,8 @@ import javafx.scene.layout.VBox;
  * 
  */
 
-public class Main extends Application  implements GestorDeArchivos{
+public class Main extends Application {
 	Scene scene;
-	Tabla tabla;
 	
 	BarraSuperior bs;
 	EditorCodigo ec;
@@ -80,7 +79,7 @@ public class Main extends Application  implements GestorDeArchivos{
 	  
 	        
 			root.setCenter(areas);
-			root.setTop(new VBox( bs));
+			root.setTop(new VBox(bs));
 			primaryStage.setTitle("TestDesk");
 			primaryStage.setScene(scene);
 			primaryStage.show();

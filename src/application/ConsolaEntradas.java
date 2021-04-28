@@ -144,5 +144,12 @@ public class ConsolaEntradas extends ScrollPane{
 		}
 	}
 	
+	public void ponerCursor(int numeroDeLinea) {
+		StackPane stack = (StackPane) contenido.getChildren().get(numeroDeLinea*2+1);
+		TextField tf= (TextField) stack.getChildren().get(1);
+		tf.requestFocus();
+		tf.setCursor(getCursor());
+	}
+	
 	
 }

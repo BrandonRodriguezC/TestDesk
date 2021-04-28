@@ -116,7 +116,8 @@ public class InsertMenu extends javafx.scene.control.ContextMenu {
 					int diferencia = tab != 0 ? diferencia(linea) : 0;
 					String estructura = (new StringBuilder())
 							.append(construirBloque(IFstatement, tab - diferencia)).append(SALTODELINEAstatement)
-							.append(construirBloque(CORCHETEAsimbolo, tab)).append(SALTODELINEAstatement)
+							.append(construirBloque(CORCHETEAsimbolo, tab))
+							.append(SALTODELINEAstatement)
 							.append(construirBloque(SALTODELINEAstatement, tab)).append(construirBloque(SALTODELINEAstatement, tab))
 							.append(construirBloque(SALTODELINEAstatement, tab)).append(construirBloque(CORCHETECsimbolo, tab))
 							.toString();
@@ -140,13 +141,15 @@ public class InsertMenu extends javafx.scene.control.ContextMenu {
 					int diferencia = tab != 0 ? diferencia(linea) : 0;
 					String estructura = (new StringBuilder())
 							.append(construirBloque(IFstatement, tab - diferencia)).append(SALTODELINEAstatement)
-							.append(construirBloque(CORCHETEAsimbolo, tab)).append(SALTODELINEAstatement)
+							.append(construirBloque(CORCHETEAsimbolo, tab))
+							.append(SALTODELINEAstatement)
 							.append(construirBloque(SALTODELINEAstatement, tab)).append(construirBloque(SALTODELINEAstatement, tab))
 							.append(construirBloque(SALTODELINEAstatement, tab)).append(construirBloque(CORCHETECsimbolo, tab))
 							.append(SALTODELINEAstatement).append(construirBloque(ELSEstatement, tab))
 							.append(SALTODELINEAstatement).append(construirBloque(CORCHETEAsimbolo, tab))
 							.append(SALTODELINEAstatement).append(construirBloque(SALTODELINEAstatement, tab))
-							.append(construirBloque(SALTODELINEAstatement, tab)).append(construirBloque(SALTODELINEAstatement, tab))
+							.append(construirBloque(SALTODELINEAstatement, tab))
+							.append(construirBloque(SALTODELINEAstatement, tab))
 							.append(construirBloque(CORCHETECsimbolo, tab)).toString();
 					ca.añadirEstructura(estructura);
 				}
@@ -168,7 +171,8 @@ public class InsertMenu extends javafx.scene.control.ContextMenu {
 					int diferencia = tab != 0 ? diferencia(linea) : 0;
 					String estructura = (new StringBuilder())
 							.append(construirBloque(WHILEstatement, tab - diferencia)).append(SALTODELINEAstatement)
-							.append(construirBloque(CORCHETEAsimbolo, tab)).append(SALTODELINEAstatement)
+							.append(construirBloque(CORCHETEAsimbolo, tab))
+							.append(SALTODELINEAstatement)
 							.append(construirBloque(SALTODELINEAstatement, tab)).append(construirBloque(SALTODELINEAstatement, tab))
 							.append(construirBloque(SALTODELINEAstatement, tab)).append(construirBloque(CORCHETECsimbolo, tab)).toString();
 					
@@ -190,7 +194,8 @@ public class InsertMenu extends javafx.scene.control.ContextMenu {
 					int diferencia = tab != 0 ? diferencia(linea) : 0;
 					String estructura = (new StringBuilder())
 							.append(construirBloque(FORstatement, tab - diferencia)).append(SALTODELINEAstatement)
-							.append(construirBloque(CORCHETEAsimbolo, tab)).append(SALTODELINEAstatement)
+							.append(construirBloque(CORCHETEAsimbolo, tab))
+							.append(SALTODELINEAstatement)
 							.append(construirBloque(SALTODELINEAstatement, tab)).append(construirBloque(SALTODELINEAstatement, tab))
 							.append(construirBloque(SALTODELINEAstatement, tab)).append( construirBloque(CORCHETECsimbolo, tab))
 							.toString();
@@ -282,10 +287,34 @@ public class InsertMenu extends javafx.scene.control.ContextMenu {
 				int caret = ca.getCaretOffset();
 				int lineNum = ca.getLineAtOffset(caret);
 				String linea = ca.getContent().getLine(lineNum);
-				if (caret == linea.length() || caret == ca.getOffsetAtLine(lineNum)) {
-					String estructura = SALTODELINEAstatement;
-					ca.añadirEstructura(estructura);
+				if (linea.matches("(\t+)?(si|mientras|repetir).*")) {
+					if (caret == ca.getOffsetAtLine(lineNum)) {
+						String estructura = SALTODELINEAstatement;
+						ca.añadirEstructura(estructura);
+					}
+				}else if(linea.matches("(\t+)?(\\{).*")){
+					if (caret == ca.getOffsetAtLine(lineNum)+ linea.length()) {
+						String estructura = SALTODELINEAstatement;
+						ca.añadirEstructura(estructura);
+					}
+				}else if(linea.matches("(\t+)?(\\}).*")) {
+					try {
+						String siguienteLinea =ca.getContent().getLine(lineNum+1);
+						if (!siguienteLinea.contains("sino") && caret == ca.getOffsetAtLine(lineNum)) {
+							String estructura = SALTODELINEAstatement;
+							ca.añadirEstructura(estructura);
+						}
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
+				}else if(!linea.matches("(\t+)?(sino).*")){
+					if (caret == ca.getOffsetAtLine(lineNum)+ linea.length() || caret == ca.getOffsetAtLine(lineNum)) {
+						String estructura = SALTODELINEAstatement;
+						ca.añadirEstructura(estructura);
+					}
 				}
+				
+				
 			}
 		});
 
@@ -485,7 +514,7 @@ public class InsertMenu extends javafx.scene.control.ContextMenu {
 				int limiteAceptacion1par = 0, limiteAceptacion2par = 0, limiteAceptacion1impar = 0,
 						limiteAceptacion2impar = 0, lineaRango = 0;
 				int inicio = 0, fin = 0;
-				if (linea.contains("si (") || linea.contains("mientras que (") || linea.contains("repetir (")
+				if (linea.contains("si (") || linea.contains("mientras que (") || linea.contains("repetir (") || linea.contains("sino")
 						|| linea.contains("{") || linea.contains("}")) {
 					while (!bloque && indice < tamaño) {
 						if (indice % 2 == 0) {
@@ -518,15 +547,22 @@ public class InsertMenu extends javafx.scene.control.ContextMenu {
 				} else {
 					inicio = ca.getContent().getOffsetAtLine(ca.getLineAtOffset(actual));
 					fin = inicio + linea.length();
-
+					if(linea.isEmpty()) {
+						fin= inicio+1;
+					}
 					ca.eliminarBloque(inicio, fin);
 				}
-//				ca.update();
-				ca.actualizarEstilos();
+				
+				ca.limpiar_actualizar();
+				
 			}
 		});
 
-		getItems().addAll(sdlCM, declCM, declAsigCM, asigCM, condicionalCM, cicloCM, todoCM, comentarioCM,
+		getItems().addAll(sdlCM, declCM
+//				, declAsigCM
+				, asigCM, condicionalCM, cicloCM 
+//				,todoCM
+				, comentarioCM,
 				metodoEscribir, metodoLeer, borrar);
 	}
 

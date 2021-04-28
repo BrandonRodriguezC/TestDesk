@@ -1,12 +1,12 @@
 package logica;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import controlador.Controlador;
 import javafx.application.Platform;
 
 public class Ejecutor implements Evaluador, Posfijo {
-	Registro rt;
 	TablaDeSimbolos ts;
 	Controlador ctrl;
 	ArrayList<String> info;
@@ -17,7 +17,6 @@ public class Ejecutor implements Evaluador, Posfijo {
 	Thread hilo;
 
 	public Ejecutor(Controlador ctrl) {
-		rt = new Registro();
 		this.ctrl = ctrl;
 		info = new ArrayList<String>();
 		esperando = false;
@@ -116,17 +115,17 @@ public class Ejecutor implements Evaluador, Posfijo {
 					} else if (actual.getTipo().contains("Lectura")) {
 						esperando = true;
 						identificadorLectura = actual.getExpresiones().getPrimeraParte().trim();
+						ctrl.ponerCursor(numeroDeLinea);
 //		DEBUG		-------------------------------------
-						info.add("EJECUCIÓN: LECTURA para " + identificadorLectura);
+//						info.add("EJECUCIÓN: LECTURA para " + identificadorLectura);
 //		DEBUG		-------------------------------------
 					} else if (actual.tipo.contains("Escritura")) {
 						Variable v = Evaluador.evaluar(actual.getExpresiones().getPrimeraParte(), ts);
 						if (v.getValor().equals("X")) {
-							info.add(
-									"EJECUCIÓN: Ocurrio un error al intentar operar " + actual.getExpresiones().getPrimeraParte());
+							info.add("EJECUCIÓN: Ocurrio un error al intentar operar " + actual.getExpresiones().getPrimeraParte());
 						} else {
 //		DEBUG		-------------------------------------				
-							info.add("EJECUCIÓN: ESCRITURA " + actual.getExpresiones().getPrimeraParte() + ":" + v.valor);
+							info.add("EJECUCIÓN: "+v.valor);
 //		DEBUG		-------------------------------------
 							ctrl.escribirEnConsola(v.valor, numeroDeLinea);
 							indiceDeInstruccion++;
@@ -134,24 +133,24 @@ public class Ejecutor implements Evaluador, Posfijo {
 
 					} else if (actual.getTipo().contains("condicional")) {
 //		DEBUG		-------------------------------------
-						info.add("EJECUCIÓN: CONDICIONAL " + actual.getExpresiones().getPrimeraParte());
+//						info.add("EJECUCIÓN: CONDICIONAL " + actual.getExpresiones().getPrimeraParte());
 //						info.add("EJECUCIÓN: Condicional " + evaluarCondicion(actual.getExpresiones().getPrimeraParte()));
 //		DEBUG		-------------------------------------
 						
 						indiceDeInstruccion = evaluarCondicion(actual.getExpresiones().getPrimeraParte())
 								? indiceDeInstruccion + 1
 								: actual.salto -1;
-						info.add("EJECUCIÓN: salto-1= " +  (actual.salto -1));
+//						info.add("EJECUCIÓN: salto-1= " +  (actual.salto -1));
 					} else if (actual.getTipo().contains("Mientras")) {
 //		DEBUG		-------------------------------------	
-						info.add("EJECUCIÓN: MIENTRAS " + actual.getExpresiones().getPrimeraParte());
+//						info.add("EJECUCIÓN: MIENTRAS " + actual.getExpresiones().getPrimeraParte());
 //		DEBUG		-------------------------------------		
 						indiceDeInstruccion = evaluarCondicion(actual.getExpresiones().getPrimeraParte())
 								? indiceDeInstruccion + 1
 								: actual.salto - 1;
 					} else if (actual.getTipo().contains("repetir")) {
 //		DEBUG		-------------------------------------
-						info.add("EJECUCIÓN: REPETIR " + actual.getExpresiones().getPrimeraParte());
+//						info.add("EJECUCIÓN: REPETIR " + actual.getExpresiones().getPrimeraParte());
 //		DEBUG		-------------------------------------
 						
 						if (Integer.parseInt(actual.getExpresiones().getPrimeraParte().trim()) == 0) {
@@ -167,8 +166,10 @@ public class Ejecutor implements Evaluador, Posfijo {
 					}
 				}
 			}
-			ctrl.presentarErrores(info, "ej");
+			
 		}
+		ctrl.presentarErrores(info, "ej");
+//		System.out.println("Lo añadeeeeee: "+Arrays.toString(info.toArray()));
 	}
 
 	/**
@@ -195,12 +196,10 @@ public class Ejecutor implements Evaluador, Posfijo {
 			resultado.nombre = identificador;
 			if (tipo.equals(resultado.tipo)) {
 				ts.put(ts.hash(identificador), resultado);
-				info.add("EJECUCIÓN: +L" + (numeroDeLinea) + "~ Se declara la variable " + identificador + " : "
-						+ resultado.valor);
+//				info.add("EJECUCIÓN: +L" + (numeroDeLinea) + "~ Se declara la variable " + identificador + " : "+ resultado.valor);
 			} else if (tipo.equals("R") && resultado.tipo.equals("E")) {
 				ts.put(ts.hash(identificador), resultado);
-				info.add("EJECUCIÓN: +L" + (numeroDeLinea) + "~ Se declara la variable " + identificador + " : "
-						+ resultado.valor);
+//				info.add("EJECUCIÓN: +L" + (numeroDeLinea) + "~ Se declara la variable " + identificador + " : "+ resultado.valor);
 			}
 			ctrl.añadirCambioEnVariable(identificador, resultado.valor, numeroDeLinea);
 		}
@@ -212,7 +211,7 @@ public class Ejecutor implements Evaluador, Posfijo {
 		Variable resultado = new Variable("", tipo, identificador);
 //		info.add("EJECUCIÓN: +L"+numeroDeLinea + "+ Declaracion: En identificador " + identificador + " = " + resultado.valor);
 		ts.put(ts.hash(identificador), resultado);
-		info.add("EJECUCIÓN: +L" + (numeroDeLinea) + "~ Se declara la variable " + identificador + " : " + resultado.valor);
+//		info.add("EJECUCIÓN: +L" + (numeroDeLinea) + "~ Se declara la variable " + identificador + " : " + resultado.valor);
 		ctrl.añadirCambioEnVariable(identificador, resultado.valor, numeroDeLinea);
 	}
 
@@ -225,16 +224,41 @@ public class Ejecutor implements Evaluador, Posfijo {
 
 //		------------------------------------------------------
 		identificador = identificador.trim();
+		System.out.println("-------------------------------");
 		Variable resultado = Evaluador.evaluar(expresion, ts);
 		if (resultado.getValor().equals("X")) {
 			info.add("EJECUCIÓN: Ocurrio un error al intentar operar " + expresion);
 		} else {
+			System.out.println("resultado = "+resultado.valor);
+			System.out.println(ts.get(identificador).getTipo());
+			System.out.println(ts.get(identificador).getTipo().equals("E"));
+			
+			String TipoInicial= ts.get(identificador).getTipo();
+			String TipoOperado= ts.get(identificador).getTipo();
+			
+			
+			
+			if (TipoInicial.equals("E")) {
+				try {
+					resultado.valor = ((int)Double.parseDouble(resultado.valor))+"";
+					System.out.println(resultado.valor);
+					resultado.tipo= TipoInicial;
+				} catch (Exception e) {
+//					System.out.println(e.toString());
+					// TODO: handle exception
+				}
+			}
+			
+			if (!TipoInicial.equals(TipoOperado)) {
+				System.out.println("Error de tipos");
+			}
+			
 			resultado.nombre = identificador;
 //			info.add("EJECUCIÓN: =L"+numeroDeLinea + "+ Asignacion: En identificador " + identificador + " ~ " + expresion + " = "
 //					+ resultado.valor);
 
 			ts.replace(identificador, resultado);
-			info.add("EJECUCIÓN: =L" + numeroDeLinea + "~ Se asigna la variable " + identificador + " : " + resultado.valor);
+//			info.add("EJECUCIÓN: =L" + numeroDeLinea + "~ Se asigna la variable " + identificador + " : " + resultado.valor);
 			ctrl.añadirCambioEnVariable(identificador, resultado.valor, numeroDeLinea);
 		}
 //		------------------------------------------------------
@@ -280,7 +304,7 @@ public class Ejecutor implements Evaluador, Posfijo {
 //					+ var.valor);
 
 			ts.replace(identificador, var);
-			info.add("EJECUCIÓN: L" + (numeroDeLinea) + "~ LECTURA: Se asigna la variable " + identificador + " : " + var.valor);
+//			info.add("EJECUCIÓN: L" + (numeroDeLinea) + "~ LECTURA: Se asigna la variable " + identificador + " : " + var.valor);
 			ctrl.añadirCambioEnVariable(identificador, var.valor, numeroDeLinea);
 		}
 //		------------------------------------------------------
@@ -295,7 +319,7 @@ public class Ejecutor implements Evaluador, Posfijo {
 			info.add("EJECUCIÓN: Ocurrio un error al intentar operar " + expresion);
 			return false;
 		} else {
-			info.add("EJECUCIÓN: ?L"+numeroDeLinea + " Evaluacion a condicion  ~ " + expresion + " = " + resultado.valor);
+//			info.add("EJECUCIÓN: ?L"+numeroDeLinea + " Evaluacion a condicion  ~ " + expresion + " = " + resultado.valor);
 			if (resultado.getValor().equals("verdadero")) {
 				return true;
 			} else {
@@ -344,6 +368,14 @@ public class Ejecutor implements Evaluador, Posfijo {
 
 	public void setInfo(ArrayList<String> info) {
 		this.info = info;
+	}
+
+	public boolean isEsperando() {
+		return esperando;
+	}
+
+	public void setEsperando(boolean esperando) {
+		this.esperando = esperando;
 	}
 	
 	

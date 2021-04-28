@@ -74,6 +74,9 @@ public class BarraSuperior extends HBox {
 			@Override
 			public void handle(ActionEvent event) {
 				FileChooser fileChooser = new FileChooser();
+				
+				FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TD files (*.td)", "*.td");
+				fileChooser.getExtensionFilters().add(extFilter);
 				fileChooser.setTitle("Open Resource File");
 				File ruta = fileChooser.showSaveDialog(presentacionMain);
 				if (ruta != null) {
@@ -97,11 +100,15 @@ public class BarraSuperior extends HBox {
 			@Override
 			public void handle(ActionEvent event) {
 				FileChooser fileChooser = new FileChooser();
-				fileChooser.setTitle("Open Resource File");
+				FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TD files (*.td)", "*.td");
+				fileChooser.getExtensionFilters().add(extFilter);
+				fileChooser.setTitle("Abrir archivo fuente");
 				File ruta = fileChooser.showOpenDialog(presentacionMain);
 				if (ruta != null) {
 					try {
 						ctrl.ponerCodigo(GestorDeArchivos.AbrirArchivo(ruta));
+						
+						ctrl.renombrarEditor(ruta.getName());
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -119,6 +126,7 @@ public class BarraSuperior extends HBox {
 		secuenciar.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
+				ctrl.ajustarCursor();
 				ctrl.limpiarTablas();
 				ctrl.secuenciar();
 			}
@@ -256,8 +264,11 @@ public class BarraSuperior extends HBox {
 			}
 		});
 		
-		getChildren().addAll(separador, nuevoEditorCodigo, guardar, abrir, secuenciar, ejecutarSiguiente, comparar, limpiar,
-				separador1, ejecucionAutonoma, segundosTF, segundoslbl, separador2,desarrollador,separador3
+		getChildren().addAll(separador, nuevoEditorCodigo, guardar, abrir, secuenciar, 
+							ejecutarSiguiente, comparar, limpiar,
+//							separador1, 
+//				ejecucionAutonoma, segundosTF, segundoslbl, 
+				separador2,desarrollador,separador3
 //				, registrolbl, registroCB, separador3,manual
 				);
 		

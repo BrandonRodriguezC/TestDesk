@@ -1,5 +1,6 @@
 package logica;
 
+import java.util.Arrays;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,9 +24,9 @@ public interface Evaluador {
 			+ PARENTESIS + ")" + "|(?<OPERADOR>" + OPERADOR + ")");
 
 	public static Variable evaluar(String expresionPostFija, TablaDeSimbolos ts) {
-		
+
 //		System.out.println(expresionPostFija);
-		
+
 		Matcher comparador = PATRON.matcher(expresionPostFija);
 		Stack<Variable> lista = new Stack<Variable>();
 		String tipoDeDato;
@@ -33,10 +34,10 @@ public interface Evaluador {
 		while (comparador.find()) {
 			tipoDeDato = comparador.group("REAL") != null ? "R"
 					: comparador.group("ENTERO") != null ? "E"
-					: comparador.group("LOGICO") != null ? "L"
-					: comparador.group("TEXTO") != null ? "T"
-					: comparador.group("IDENTIFICADOR") != null ? "I"
-					: comparador.group("OPERADOR") != null ? "O" : "X";
+							: comparador.group("LOGICO") != null ? "L"
+									: comparador.group("TEXTO") != null ? "T"
+											: comparador.group("IDENTIFICADOR") != null ? "I"
+													: comparador.group("OPERADOR") != null ? "O" : "X";
 			/** recuperacion rapida de error con condicional en X */
 			if (!tipoDeDato.equals("O")) {
 				if (tipoDeDato.equals("I")) {
@@ -54,9 +55,10 @@ public interface Evaluador {
 				lista.pop();
 //	DEBUG
 //				System.out.println("A operar: ["+operando1.getValor() + "] " + comparador.group() + " [" + operando2.getValor()+"]");
+				System.out.println(operando1.getValor()+ " "+comparador.group()+ " "+operando2.getValor());
 				String resultado[] = operar(operando1.getValor(), operando1.getTipo(), comparador.group(),
 						operando2.getValor(), operando2.getTipo());
-
+				System.out.println(Arrays.toString(resultado));
 				if (resultado[0].equals("X")) {
 					return (new Variable("X", "X", ""));
 				}
@@ -138,35 +140,54 @@ public interface Evaluador {
 		double operando2Decimal = 0;
 		boolean operando2Logico = false;
 		String operando2Texto = "";
+//		System.out.println(operando1+ " "+tipo1 );
 
-		if (tipo1.equals("E")) {
-			operando1Entero = Integer.parseInt(operando1);
-		} else if (tipo1.equals("R")) {
-			operando1Decimal = Double.parseDouble(operando1);
-		} else if (tipo1.equals("L")) {
-			if (operando1.equals("verdadero")) {
-				operando1Logico = true;
-			} else {
-				operando1Logico = false;
+		try {
+			if (tipo1.equals("E")) {
+				try {
+					operando1Entero = Integer.parseInt(operando1);
+				} catch (Exception e2) {
+					try {
+						operando1Entero = (int) Double.parseDouble(operando1);
+					} catch (Exception e3) {
+
+					}
+				}
+			} else if (tipo1.equals("R")) {
+				operando1Decimal = Double.parseDouble(operando1);
+			} else if (tipo1.equals("L")) {
+				if (operando1.equals("verdadero")) {
+					operando1Logico = true;
+				} else {
+					operando1Logico = false;
+				}
+			} else if (tipo1.equals("T")) {
+				operando1Texto = operando1;
 			}
-		} else if (tipo1.equals("T")) {
-			operando1Texto = operando1;
-		}
+			if (tipo2.equals("E")) {
+				try {
+					operando2Entero = Integer.parseInt(operando2);
+				} catch (Exception e) {
+					try {
+						operando2Entero = (int) Double.parseDouble(operando2);
+					} catch (Exception e2) {
 
-		if (tipo2.equals("E")) {
-			operando2Entero = Integer.parseInt(operando2);
-		} else if (tipo2.equals("R")) {
-			operando2Decimal = Double.parseDouble(operando2);
-		} else if (tipo2.equals("L")) {
-			if (operando2.equals("verdadero")) {
-				operando2Logico = true;
-			} else {
-				operando2Logico = false;
+					}
+				}
+			} else if (tipo2.equals("R")) {
+				operando2Decimal = Double.parseDouble(operando2);
+			} else if (tipo2.equals("L")) {
+				if (operando2.equals("verdadero")) {
+					operando2Logico = true;
+				} else {
+					operando2Logico = false;
+				}
+			} else if (tipo2.equals("T")) {
+				operando2Texto = operando2;
 			}
-		} else if (tipo2.equals("T")) {
-			operando2Texto = operando2;
+		} catch (Exception e) {
+			System.out.println("Error al convertir: "+e.toString());
 		}
-
 		/************************ OPERANDO *************************************/
 		String vec[] = new String[2];
 		try {
@@ -194,7 +215,7 @@ public interface Evaluador {
 					return vec;
 				} else if (operador.equals("%")) {
 					vec[0] = (operando1Decimal % operando2Entero) + "";
-					vec[1] = "E";
+					vec[1] = "R";
 					return vec;
 				} else if (operador.equals("==")) {
 					if (operando1Decimal == operando2Entero) {
@@ -270,7 +291,7 @@ public interface Evaluador {
 					return vec;
 				} else if (operador.equals("%")) {
 					vec[0] = (operando1Entero % operando2Decimal) + "";
-					vec[1] = "E";
+					vec[1] = "R";
 					return vec;
 				} else if (operador.equals("==")) {
 					if (operando1Entero == operando2Decimal) {
@@ -389,7 +410,7 @@ public interface Evaluador {
 				} else if (operador.equals("%")) {
 					// VERIFICAR
 					vec[0] = (operando1Decimal % operando2Decimal) + "";
-					vec[1] = "E";
+					vec[1] = "R";
 					return vec;
 					// VERIFICAR
 				} else if (operador.equals("==")) {
@@ -489,7 +510,7 @@ public interface Evaluador {
 					return vec;
 				} else if (operador.equals("%")) {
 					vec[0] = (operando1Entero % operando2Entero) + "";
-					vec[1] = "E";
+					vec[1] = "R";
 					return vec;
 				} else if (operador.equals("==")) {
 					if (operando1Entero == operando2Entero) {
@@ -579,11 +600,11 @@ public interface Evaluador {
 
 			}
 		} catch (Exception e) {
-			
+			System.out.println("Error al operar: "+e.toString());
 		}
 		vec[0] = "X";
 		vec[1] = "X";
-
+		
 		return vec;
 	}
 

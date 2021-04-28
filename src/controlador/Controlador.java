@@ -43,6 +43,7 @@ public class Controlador {
 		if (origen.equals("as")) {
 			cs.presentarErrores(as.presentarErrores());
 		} else {
+			
 			cs.presentarErrores(errores);
 		}
 	}
@@ -182,6 +183,7 @@ public class Controlador {
 			if (ec.getEjecucion()) {
 				ec.setEjecucion(false);
 				bs.cambiarIconoEjecucion(false);
+				ej.setEsperando(false);
 				ec.actualizarEstilosEjecucion();
 			} else {
 				secuenciar();
@@ -192,9 +194,9 @@ public class Controlador {
 		
 	}
 	
-	public void presentarEstructura(ArrayList<String> estructura) {
-		cs.presentarEstructura(estructura);
-	}
+//	public void presentarEstructura(ArrayList<String> estructura) {
+//		cs.presentarEstructura(estructura);
+//	}
 	
 	public void setDesarrolladorConsolas() {
 		cs.setDesarrollador(!cs.isDesarrollador());
@@ -203,6 +205,19 @@ public class Controlador {
 //	public void setDesarrolladorEditorCodigo() {
 //		ec.setDesarrollador(!ec.isDesarrollador());
 //	}
+	
+	public void ponerCursor(int fila) {
+		cs.ponerCursor(fila);
+	}
+	
+	
+	public void renombrarEditor(String nombre) {
+		ec.renombrarEditor(nombre);
+	}
+	
+	public void ajustarCursor() {
+		ec.ajustarCursor();
+	}
 	
 	/**
 	 * ------------------------------------------------- GETTER & SETTERS

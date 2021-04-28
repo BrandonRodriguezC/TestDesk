@@ -12,6 +12,7 @@ import javafx.scene.control.TabPane;
 
 public class EditorCodigo extends TabPane {
 	ArrayList<CodeArea> areasDeCodigo;
+	
 	Controlador ctrl;
 
 	public EditorCodigo(Controlador ctrl) {
@@ -68,6 +69,7 @@ public class EditorCodigo extends TabPane {
 		CodeArea areaCodigo = new CodeArea(ctrl);
 		areasDeCodigo.add(areaCodigo);
 		Tab tab = new Tab(nombre, areaCodigo);
+		
 		tab.setOnClosed(new EventHandler<Event>() {
 			@Override
 			public void handle(Event event) {
@@ -119,4 +121,17 @@ public class EditorCodigo extends TabPane {
 		CodeArea aux = areasDeCodigo.get(indiceCodigoArea);
 		return aux.getError();
 	}
+	
+	public void renombrarEditor(String nombre) {
+		int indiceCodigoArea = getSelectionModel().getSelectedIndex();
+		getTabs().get(indiceCodigoArea).setText(nombre);
+		
+	}
+	
+	public void ajustarCursor() {
+		int indiceCodigoArea = getSelectionModel().getSelectedIndex();
+		CodeArea aux = areasDeCodigo.get(indiceCodigoArea);
+		aux.ajustarCursor();
+	}
+	
 }
