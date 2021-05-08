@@ -9,7 +9,7 @@ o estudiantes que apenas empiezan a programar, este software se comportara como 
 
 **Screenshot**: Está es una repesentación de ejemplo del aplicativo; e.j.,
 
-![](https://64.media.tumblr.com/53ca0f6f0419506226b5e1b4b8135cd0/d1130cd7866bb319-77/s2048x3072/290faa4f938c47b667f0a80a49400d4ac4a70ea3.png)
+![](https://64.media.tumblr.com/c6824e7c10bd86f3e7b802243bf68a10/d66bf66ebb0d58a1-4a/s2048x3072/57d6c6ac2328423f63d8997fe74e57ec4095d19d.png)
 
 ## Instalación
 
