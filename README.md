@@ -13,7 +13,7 @@ o estudiantes que apenas empiezan a programar, este software se comportara como 
 
 ## Instalación
 
-Para instalar debe tener instalado Java como requisito, despues puede simplemente descargar el *.jar* y empieza a usarlo <([descarga](https://www.google.com/))> si desea puede tambien instalar el *.exe*
+Para instalar debe tener instalado Java como requisito, despues puede simplemente descargar el *.jar* y empieza a usarlo <([descarga](https://github.com/BrandonRodriguezC/testdesk-documentacion/blob/main/TestDesk.jar))> si desea puede tambien instalar el *.exe*
 
 ----
 ## Uso
