@@ -15,11 +15,12 @@ import javafx.scene.shape.Rectangle;
 public class ConsolaEntradas extends ScrollPane{
 	ArrayList<StackPane> Objetos;
 	GridPane contenido;
-	int  filas, ancho= 200, objetos;
+	int  filas, ancho= 200, objetos, lineaAnterior;
 	
 	public ConsolaEntradas() {
 		filas=0;
 		objetos=0;
+		lineaAnterior=-1;
 		Objetos = new ArrayList<>();
 		contenido= new GridPane();
 		setContent(contenido);
@@ -58,7 +59,7 @@ public class ConsolaEntradas extends ScrollPane{
 		StackPane stack= new StackPane();
 		TextField tf= new TextField();
 		Rectangle rec = new Rectangle(ancho,16);
-		tf.setEditable(false);
+		
 		tf.setPrefWidth(ancho);
 		tf.setPrefHeight(14);
 		tf.setMaxHeight(14);
@@ -119,6 +120,10 @@ public class ConsolaEntradas extends ScrollPane{
 			StackPane stack = (StackPane) lista.get(i);
 			TextField tf= (TextField) stack.getChildren().get(1);
 			tf.setText("");
+			tf.getStyleClass().remove("seleccionar");
+			tf.getStyleClass().add("rectangulo");
+			Rectangle rct = (Rectangle) stack.getChildren().get(0);
+			rct.getStyleClass().add("rectangulo");
 		}
 	}
 	
@@ -149,6 +154,44 @@ public class ConsolaEntradas extends ScrollPane{
 		TextField tf= (TextField) stack.getChildren().get(1);
 		tf.requestFocus();
 		tf.setCursor(getCursor());
+	}
+	
+	public void señalarLinea(int numeroLinea) {
+//		numeroLinea= numeroLinea+2;
+		int tamaño = 2;
+		numeroLinea= numeroLinea++;
+		
+		for (int i = 0; i < tamaño; i++) {
+			StackPane spA = (StackPane) contenido.getChildren().get(numeroLinea*tamaño+i);
+			Rectangle rctA = (Rectangle) spA.getChildren().get(0);
+			rctA.getStyleClass().remove("discrepancia");
+			rctA.getStyleClass().add("seleccionar");
+			TextField tfA = (TextField) spA.getChildren().get(1);
+			tfA.getStyleClass().remove("discrepancia");
+			tfA.getStyleClass().add("seleccionar");
+		}
+
+		if (lineaAnterior != -1) {
+			for (int j = 0; j < tamaño; j++) {
+				StackPane spAA = (StackPane) contenido.getChildren().get(lineaAnterior*tamaño+j);
+				Rectangle rctAA = (Rectangle) spAA.getChildren().get(0);
+				rctAA.getStyleClass().remove("seleccionar");
+				TextField tfAA = (TextField) spAA.getChildren().get(1);
+				tfAA.getStyleClass().remove("seleccionar");
+				
+			}
+		}
+
+		lineaAnterior = numeroLinea;
+
+	}
+
+	public int getLineaAnterior() {
+		return lineaAnterior;
+	}
+
+	public void setLineaAnterior(int lineaAnterior) {
+		this.lineaAnterior = lineaAnterior;
 	}
 	
 	

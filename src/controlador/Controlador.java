@@ -73,7 +73,9 @@ public class Controlador {
 		} else {
 			if (ec.getEjecucion()) {
 				detener();
+				
 			} else {
+				cs.mostrarEscritura();
 				ec.setEjecucion(true);
 				bs.cambiarIconoEjecucion(true);
 				ec.actualizarEstilosEjecucion();
@@ -90,6 +92,11 @@ public class Controlador {
 		ec.setEjecucion(false);
 		bs.cambiarIconoEjecucion(false);
 		ec.actualizarEstilosEjecucion();
+		ej.setError(false);
+		ej.setEsperando(false);
+		cs.mostrarInformacion();
+		cs.setLineaAnterior(-1);
+		ts.setLineaAnterior(-1);
 	}
 
 	public void ejecutarSiguienteInstruccion() {
@@ -125,8 +132,8 @@ public class Controlador {
 		return as.getVariables();
 	}
 
-	public String encontrarTipoParaIdentificador(String expresion) {
-		return as.encontrarTipoParaIdentificador(expresion);
+	public String encontrarTipoParaIdentificador(String expresion, int numeroLinea) {
+		return as.encontrarTipoParaIdentificador(expresion, numeroLinea);
 	}
 
 	public boolean evaluar(boolean compuesta, boolean declaracionAsignacion, String tipoDeVariable, String expresion,
@@ -148,6 +155,8 @@ public class Controlador {
 
 	public void señalarLineaEnCodigo(int numeroDeLinea) {
 		ec.señalarLineaEnCodigo(numeroDeLinea);
+		ts.señalarLinea(numeroDeLinea);
+		cs.señalarLinea(numeroDeLinea);
 	}
 
 	public void actualizarRepetir(String numero, int linea) {
@@ -218,6 +227,16 @@ public class Controlador {
 	public void ajustarCursor() {
 		ec.ajustarCursor();
 	}
+	
+	
+	public String tomarNombreDelEditor() {
+		return ec.getNombreEditor();
+	}
+	
+	public void deshabilitarSiguienteInstruccion() {
+		bs.deshabilitarSiguienteInstruccion();
+	}
+	
 	
 	/**
 	 * ------------------------------------------------- GETTER & SETTERS

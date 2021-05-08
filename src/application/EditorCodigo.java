@@ -134,4 +134,9 @@ public class EditorCodigo extends TabPane {
 		aux.ajustarCursor();
 	}
 	
+	public String getNombreEditor() {
+		int indiceCodigoArea = getSelectionModel().getSelectedIndex();
+		return getTabs().get(indiceCodigoArea).getText();
+	}
+	
 }

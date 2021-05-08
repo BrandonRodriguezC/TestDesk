@@ -35,10 +35,12 @@ public class BarraSuperior extends HBox {
 	Controlador ctrl;
 	Stage presentacionMain;
 	ComboBox<String> registroCB;
+	boolean fin;
 
 	public BarraSuperior(Controlador ctrl, Stage main) {
 		this.ctrl = ctrl;
 		this.presentacionMain = main;
+		fin =false;
 
 		Separator separador = new Separator();
 		separador.setOrientation(Orientation.VERTICAL);
@@ -77,6 +79,8 @@ public class BarraSuperior extends HBox {
 				
 				FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TD files (*.td)", "*.td");
 				fileChooser.getExtensionFilters().add(extFilter);
+				fileChooser.setInitialFileName(ctrl.tomarNombreDelEditor());
+
 				fileChooser.setTitle("Open Resource File");
 				File ruta = fileChooser.showSaveDialog(presentacionMain);
 				if (ruta != null) {
@@ -129,6 +133,7 @@ public class BarraSuperior extends HBox {
 				ctrl.ajustarCursor();
 				ctrl.limpiarTablas();
 				ctrl.secuenciar();
+				fin=false;
 			}
 		});
 
@@ -142,7 +147,12 @@ public class BarraSuperior extends HBox {
 		ejecutarSiguiente.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				ctrl.ejecutarSiguienteInstruccion();
+				if(fin) {
+					ctrl.alertar("Ejecución", "Información", "Tu programa ya terminó de ejecutarse, para volver a ejecutarlo debes parar el programa (icono rojo con mano stop) y nuevamente ejecutalo (icono verde con play). Recuerda que si paras el programa, se limpiarán las salidas de las tablas y consolas.");
+				}else {
+					ctrl.ejecutarSiguienteInstruccion();
+				}
+				
 			}
 		});
 
@@ -237,6 +247,7 @@ public class BarraSuperior extends HBox {
 			@Override
 			public void handle(ActionEvent event) {
 				// mostrar manual
+				//ctrl.mostrarManual();
 			}
 		});
 		
@@ -290,6 +301,7 @@ public class BarraSuperior extends HBox {
 			iv.setFitWidth(20);
 			ejecutarSiguiente.setGraphic(iv);
 		} else {
+			fin=false;
 			iv = new ImageView(new Image(getClass().getResourceAsStream("/assets/ejecutar.png")));
 			iv.setFitHeight(20);
 			iv.setFitWidth(20);
@@ -301,4 +313,14 @@ public class BarraSuperior extends HBox {
 		}
 	}
 
+	
+	public void deshabilitarSiguienteInstruccion() {
+		ImageView iv;
+		iv = new ImageView(new Image(getClass().getResourceAsStream("/assets/siguiente-inhabilitado.png")));
+		iv.setFitHeight(20);
+		iv.setFitWidth(20);
+		ejecutarSiguiente.setGraphic(iv);
+		fin=true;
+	}
+	
 }

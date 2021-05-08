@@ -3,7 +3,7 @@
   realizations="true" associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
   <class id="1" language="java" name="application.BarraSuperior" project="TestDesk" 
     file="/TestDesk/src/application/BarraSuperior.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="579" y="1170"/>    
+    <position height="-1" width="-1" x="582" y="1183"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -191,460 +191,441 @@
     </display>  
   </interface>  
   <association id="22">    
-    <bendpoint x="1428" y="1042"/>    
-    <bendpoint x="1626" y="1044"/>    
-    <bendpoint x="1660" y="1514"/>    
-    <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="23" name="sc">        
-        <position height="0" width="0" x="-724" y="1080"/>      
-      </attribute>      
-      <multiplicity id="24" minimum="0" maximum="1">        
-        <position height="0" width="0" x="-724" y="1080"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="18" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="25">    
-    <end type="SOURCE" refId="13"/>    
-    <end type="TARGET" refId="11"/>  
-  </dependency>  
-  <association id="26">    
-    <bendpoint x="214" y="707"/>    
-    <bendpoint x="217" y="1171"/>    
-    <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="27" name="bs">        
-        <position height="0" width="0" x="4" y="408"/>      
-      </attribute>      
-      <multiplicity id="28" minimum="0" maximum="1">        
-        <position height="0" width="0" x="4" y="408"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="1" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="29">    
-    <end type="SOURCE" refId="14"/>    
-    <end type="TARGET" refId="19"/>  
-  </dependency>  
-  <association id="30">    
-    <bendpoint x="164" y="14"/>    
-    <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="31" name="cs">        
-        <position height="0" width="0" x="-19" y="148"/>      
-      </attribute>      
-      <multiplicity id="32" minimum="0" maximum="1">        
-        <position height="0" width="0" x="-19" y="148"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="4" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="33">    
-    <end type="SOURCE" refId="13"/>    
-    <end type="TARGET" refId="20"/>  
-  </dependency>  
-  <association id="34">    
-    <bendpoint x="1712" y="1754"/>    
-    <end type="SOURCE" refId="18" navigable="false">      
-      <attribute id="35" name="stack">        
-        <position height="0" width="0" x="-1366" y="1298"/>      
-      </attribute>      
-      <multiplicity id="36" minimum="0" maximum="2147483647">        
-        <position height="0" width="0" x="-1366" y="1298"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="12" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="37">    
-    <end type="SOURCE" refId="6"/>    
-    <end type="TARGET" refId="2"/>  
-  </dependency>  
-  <dependency id="38">    
-    <bendpoint x="1966" y="394"/>    
-    <bendpoint x="2548" y="402"/>    
-    <bendpoint x="2548" y="988"/>    
-    <end type="SOURCE" refId="11"/>    
-    <end type="TARGET" refId="14"/>  
-  </dependency>  
-  <dependency id="39">    
-    <end type="SOURCE" refId="1"/>    
-    <end type="TARGET" refId="21"/>  
-  </dependency>  
-  <association id="40">    
-    <bendpoint x="857" y="1175"/>    
-    <end type="SOURCE" refId="5" navigable="false">      
-      <attribute id="41" name="ctrl">        
-        <position height="0" width="0" x="-772" y="260"/>      
-      </attribute>      
-      <multiplicity id="42" minimum="0" maximum="1">        
-        <position height="0" width="0" x="-772" y="260"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="10" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="43">    
-    <bendpoint x="880" y="966"/>    
-    <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="44" name="bs">        
-        <position height="0" width="0" x="4" y="408"/>      
-      </attribute>      
-      <multiplicity id="45" minimum="0" maximum="1">        
-        <position height="0" width="0" x="4" y="408"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="1" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="46">    
-    <bendpoint x="1496" y="480"/>    
-    <bendpoint x="2152" y="488"/>    
-    <end type="SOURCE" refId="10"/>    
-    <end type="TARGET" refId="19"/>  
-  </dependency>  
-  <association id="47">    
-    <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="48" name="cs">        
-        <position height="0" width="0" x="-19" y="148"/>      
-      </attribute>      
-      <multiplicity id="49" minimum="0" maximum="1">        
-        <position height="0" width="0" x="-19" y="148"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="4" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="50">    
-    <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="51" name="instrucciones">        
-        <position height="0" width="0" x="-1488" y="1650"/>      
-      </attribute>      
-      <multiplicity id="52" minimum="0" maximum="2147483647">        
-        <position height="0" width="0" x="-1488" y="1650"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="16" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="53">    
-    <end type="SOURCE" refId="4" navigable="false">      
-      <attribute id="54" name="areaEntrada">        
-        <position height="0" width="0" x="-151" y="172"/>      
-      </attribute>      
-      <multiplicity id="55" minimum="0" maximum="1">        
-        <position height="0" width="0" x="-151" y="172"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="3" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="56">    
-    <bendpoint x="735" y="662"/>    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="57" name="automatica">        
-        <position height="0" width="0" x="-552" y="76"/>      
-      </attribute>      
-      <multiplicity id="58" minimum="0" maximum="1">        
-        <position height="0" width="0" x="-552" y="76"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="8" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="59">    
-    <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="60" name="ts">        
-        <position height="0" width="0" x="0" y="572"/>      
-      </attribute>      
-      <multiplicity id="61" minimum="0" maximum="1">        
-        <position height="0" width="0" x="0" y="572"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="62">    
-    <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="63" name="ctrl">        
-        <position height="0" width="0" x="-772" y="260"/>      
-      </attribute>      
-      <multiplicity id="64" minimum="0" maximum="1">        
-        <position height="0" width="0" x="-772" y="260"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="10" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="65">    
-    <end type="SOURCE" refId="19" navigable="false">      
-      <attribute id="66" name="ts">        
-        <position height="0" width="0" x="-1042" y="182"/>      
-      </attribute>      
-      <multiplicity id="67" minimum="0" maximum="2147483647">        
-        <position height="0" width="0" x="-1042" y="182"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="20" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="68">    
-    <bendpoint x="218" y="676"/>    
-    <bendpoint x="296" y="676"/>    
-    <bendpoint x="297" y="826"/>    
-    <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="69" name="ts">        
-        <position height="0" width="0" x="0" y="572"/>      
-      </attribute>      
-      <multiplicity id="70" minimum="0" maximum="1">        
-        <position height="0" width="0" x="0" y="572"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="71">    
-    <bendpoint x="2095" y="1275"/>    
-    <bendpoint x="2377" y="1275"/>    
-    <end type="SOURCE" refId="13"/>    
-    <end type="TARGET" refId="15"/>  
-  </dependency>  
-  <dependency id="72">    
-    <end type="SOURCE" refId="11"/>    
-    <end type="TARGET" refId="20"/>  
-  </dependency>  
-  <association id="73">    
-    <bendpoint x="1700" y="1480"/>    
-    <bendpoint x="1642" y="1034"/>    
-    <bendpoint x="1442" y="1028"/>    
-    <end type="SOURCE" refId="18" navigable="false">      
-      <attribute id="74" name="ctrl">        
-        <position height="0" width="0" x="-772" y="260"/>      
-      </attribute>      
-      <multiplicity id="75" minimum="0" maximum="1">        
-        <position height="0" width="0" x="-772" y="260"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="10" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="76">    
-    <end type="SOURCE" refId="11"/>    
-    <end type="TARGET" refId="17"/>  
-  </dependency>  
-  <association id="77">    
-    <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="78" name="ej">        
-        <position height="0" width="0" x="-596" y="121"/>      
-      </attribute>      
-      <multiplicity id="79" minimum="0" maximum="1">        
-        <position height="0" width="0" x="-596" y="121"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="13" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="80">    
-    <bendpoint x="820" y="879"/>    
-    <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="81" name="ctrl">        
-        <position height="0" width="0" x="-772" y="260"/>      
-      </attribute>      
-      <multiplicity id="82" minimum="0" maximum="1">        
-        <position height="0" width="0" x="-772" y="260"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="10" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="83">    
-    <bendpoint x="1972" y="416"/>    
-    <bendpoint x="2356" y="426"/>    
-    <end type="SOURCE" refId="11" navigable="false">      
-      <attribute id="84" name="tablaDeSimbolos">        
-        <position height="0" width="0" x="-819" y="685"/>      
-      </attribute>      
-      <multiplicity id="85" minimum="0" maximum="1">        
-        <position height="0" width="0" x="-819" y="685"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="19" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="86">    
-    <bendpoint x="822" y="1142"/>    
-    <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="87" name="ec">        
-        <position height="0" width="0" x="29" y="272"/>      
-      </attribute>      
-      <multiplicity id="88" minimum="0" maximum="1">        
-        <position height="0" width="0" x="29" y="272"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="5" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="89">    
-    <end type="SOURCE" refId="18"/>    
-    <end type="TARGET" refId="15"/>  
-  </dependency>  
-  <association id="90">    
     <bendpoint x="1240" y="160"/>    
     <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="91" name="as">        
+      <attribute id="23" name="as">        
         <position height="0" width="0" x="-797" y="174"/>      
       </attribute>      
-      <multiplicity id="92" minimum="0" maximum="1">        
+      <multiplicity id="24" minimum="0" maximum="1">        
         <position height="0" width="0" x="-797" y="174"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="11" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="93">    
-    <end type="SOURCE" refId="5" navigable="false">      
-      <attribute id="94" name="areasDeCodigo">        
-        <position height="0" width="0" x="-76" y="364"/>      
-      </attribute>      
-      <multiplicity id="95" minimum="0" maximum="2147483647">        
-        <position height="0" width="0" x="-76" y="364"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="2" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="96">    
-    <bendpoint x="1972" y="375"/>    
-    <bendpoint x="2595" y="377"/>    
-    <bendpoint x="2595" y="1512"/>    
-    <end type="SOURCE" refId="11" navigable="false">      
-      <attribute id="97" name="expresionesPosfijas">        
-        <position height="0" width="0" x="-815" y="1262"/>      
-      </attribute>      
-      <multiplicity id="98" minimum="0" maximum="2147483647">        
-        <position height="0" width="0" x="-815" y="1262"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="15" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="99">    
-    <end type="SOURCE" refId="16" navigable="false">      
-      <attribute id="100" name="expresiones">        
-        <position height="0" width="0" x="-815" y="1262"/>      
-      </attribute>      
-      <multiplicity id="101" minimum="0" maximum="1">        
-        <position height="0" width="0" x="-815" y="1262"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="15" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="102">    
-    <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="103" name="ctrl">        
-        <position height="0" width="0" x="-772" y="260"/>      
-      </attribute>      
-      <multiplicity id="104" minimum="0" maximum="1">        
-        <position height="0" width="0" x="-772" y="260"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="10" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="105">    
-    <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="106" name="menu">        
-        <position height="0" width="0" x="-128" y="310"/>      
-      </attribute>      
-      <multiplicity id="107" minimum="0" maximum="1">        
-        <position height="0" width="0" x="-128" y="310"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="6" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <realization id="108">    
-    <end type="SOURCE" refId="13"/>    
-    <end type="TARGET" refId="17"/>  
-  </realization>  
-  <dependency id="109">    
-    <bendpoint x="2568" y="1082"/>    
-    <bendpoint x="2566" y="160"/>    
-    <end type="SOURCE" refId="14"/>    
-    <end type="TARGET" refId="20"/>  
-  </dependency>  
-  <association id="110">    
-    <bendpoint x="2025" y="1760"/>    
-    <bendpoint x="2030" y="1897"/>    
-    <end type="SOURCE" refId="18" navigable="false">      
-      <attribute id="111" name="list">        
-        <position height="0" width="0" x="-1488" y="1650"/>      
-      </attribute>      
-      <multiplicity id="112" minimum="0" maximum="2147483647">        
-        <position height="0" width="0" x="-1488" y="1650"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="16" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="113">    
-    <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="114" name="ctrl">        
-        <position height="0" width="0" x="-772" y="260"/>      
-      </attribute>      
-      <multiplicity id="115" minimum="0" maximum="1">        
-        <position height="0" width="0" x="-772" y="260"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="10" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <realization id="116">    
-    <end type="SOURCE" refId="13"/>    
-    <end type="TARGET" refId="14"/>  
-  </realization>  
-  <association id="117">    
+  <association id="25">    
     <bendpoint x="159" y="1573"/>    
     <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="118" name="ec">        
+      <attribute id="26" name="ec">        
         <position height="0" width="0" x="29" y="272"/>      
       </attribute>      
-      <multiplicity id="119" minimum="0" maximum="1">        
+      <multiplicity id="27" minimum="0" maximum="1">        
         <position height="0" width="0" x="29" y="272"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="120">    
-    <bendpoint x="459" y="666"/>    
+  <dependency id="28">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="20"/>  
+  </dependency>  
+  <association id="29">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="30" name="menu">        
+        <position height="0" width="0" x="-128" y="310"/>      
+      </attribute>      
+      <multiplicity id="31" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-128" y="310"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="32">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="33" name="ts">        
+        <position height="0" width="0" x="0" y="572"/>      
+      </attribute>      
+      <multiplicity id="34" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="572"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="9" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="35">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="17"/>  
+  </dependency>  
+  <association id="36">    
+    <bendpoint x="164" y="14"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="37" name="cs">        
+        <position height="0" width="0" x="-19" y="148"/>      
+      </attribute>      
+      <multiplicity id="38" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-19" y="148"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="39">    
+    <bendpoint x="1496" y="480"/>    
+    <bendpoint x="2152" y="488"/>    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="19"/>  
+  </dependency>  
+  <association id="40">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="41" name="instrucciones">        
+        <position height="0" width="0" x="-1488" y="1650"/>      
+      </attribute>      
+      <multiplicity id="42" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-1488" y="1650"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="16" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="43">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="17"/>  
+  </realization>  
+  <association id="44">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="45" name="ctrl">        
+        <position height="0" width="0" x="-772" y="260"/>      
+      </attribute>      
+      <multiplicity id="46" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-772" y="260"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="47">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="48" name="expresiones">        
+        <position height="0" width="0" x="-815" y="1262"/>      
+      </attribute>      
+      <multiplicity id="49" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-815" y="1262"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="50">    
+    <bendpoint x="1712" y="1754"/>    
+    <end type="SOURCE" refId="18" navigable="false">      
+      <attribute id="51" name="stack">        
+        <position height="0" width="0" x="-1366" y="1298"/>      
+      </attribute>      
+      <multiplicity id="52" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-1366" y="1298"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="53">    
+    <end type="SOURCE" refId="18"/>    
+    <end type="TARGET" refId="15"/>  
+  </dependency>  
+  <association id="54">    
+    <bendpoint x="880" y="966"/>    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="55" name="bs">        
+        <position height="0" width="0" x="7" y="421"/>      
+      </attribute>      
+      <multiplicity id="56" minimum="0" maximum="1">        
+        <position height="0" width="0" x="7" y="421"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="57">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="58" name="cs">        
+        <position height="0" width="0" x="-19" y="148"/>      
+      </attribute>      
+      <multiplicity id="59" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-19" y="148"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="60">    
+    <bendpoint x="735" y="662"/>    
     <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="121" name="manual">        
+      <attribute id="61" name="automatica">        
         <position height="0" width="0" x="-552" y="76"/>      
       </attribute>      
-      <multiplicity id="122" minimum="0" maximum="1">        
+      <multiplicity id="62" minimum="0" maximum="1">        
         <position height="0" width="0" x="-552" y="76"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="8" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="123">    
+  <association id="63">    
     <bendpoint x="1932" y="737"/>    
     <bendpoint x="2252" y="732"/>    
     <end type="SOURCE" refId="13" navigable="false">      
-      <attribute id="124" name="ts">        
+      <attribute id="64" name="ts">        
         <position height="0" width="0" x="-819" y="685"/>      
       </attribute>      
-      <multiplicity id="125" minimum="0" maximum="1">        
+      <multiplicity id="65" minimum="0" maximum="1">        
         <position height="0" width="0" x="-819" y="685"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
+  <association id="66">    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="67" name="areaEntrada">        
+        <position height="0" width="0" x="-151" y="172"/>      
+      </attribute>      
+      <multiplicity id="68" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-151" y="172"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="69">    
+    <bendpoint x="1428" y="1042"/>    
+    <bendpoint x="1626" y="1044"/>    
+    <bendpoint x="1660" y="1514"/>    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="70" name="sc">        
+        <position height="0" width="0" x="-724" y="1080"/>      
+      </attribute>      
+      <multiplicity id="71" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-724" y="1080"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="18" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="72">    
+    <bendpoint x="459" y="666"/>    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="73" name="manual">        
+        <position height="0" width="0" x="-552" y="76"/>      
+      </attribute>      
+      <multiplicity id="74" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-552" y="76"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="75">    
+    <bendpoint x="2025" y="1760"/>    
+    <bendpoint x="2030" y="1897"/>    
+    <end type="SOURCE" refId="18" navigable="false">      
+      <attribute id="76" name="list">        
+        <position height="0" width="0" x="-1488" y="1650"/>      
+      </attribute>      
+      <multiplicity id="77" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-1488" y="1650"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="16" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="78">    
+    <bendpoint x="2095" y="1275"/>    
+    <bendpoint x="2377" y="1275"/>    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="15"/>  
+  </dependency>  
+  <association id="79">    
+    <bendpoint x="1700" y="1480"/>    
+    <bendpoint x="1642" y="1034"/>    
+    <bendpoint x="1442" y="1028"/>    
+    <end type="SOURCE" refId="18" navigable="false">      
+      <attribute id="80" name="ctrl">        
+        <position height="0" width="0" x="-772" y="260"/>      
+      </attribute>      
+      <multiplicity id="81" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-772" y="260"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="82">    
+    <bendpoint x="822" y="1142"/>    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="83" name="ec">        
+        <position height="0" width="0" x="29" y="272"/>      
+      </attribute>      
+      <multiplicity id="84" minimum="0" maximum="1">        
+        <position height="0" width="0" x="29" y="272"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="85">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="86" name="ej">        
+        <position height="0" width="0" x="-596" y="121"/>      
+      </attribute>      
+      <multiplicity id="87" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-596" y="121"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="88">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <association id="89">    
+    <bendpoint x="218" y="676"/>    
+    <bendpoint x="296" y="676"/>    
+    <bendpoint x="297" y="826"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="90" name="ts">        
+        <position height="0" width="0" x="0" y="572"/>      
+      </attribute>      
+      <multiplicity id="91" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="572"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="9" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="92">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="93" name="ctrl">        
+        <position height="0" width="0" x="-772" y="260"/>      
+      </attribute>      
+      <multiplicity id="94" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-772" y="260"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="95">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="21"/>  
+  </dependency>  
+  <association id="96">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="97" name="ctrl">        
+        <position height="0" width="0" x="-772" y="260"/>      
+      </attribute>      
+      <multiplicity id="98" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-772" y="260"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="99">    
+    <bendpoint x="1972" y="416"/>    
+    <bendpoint x="2356" y="426"/>    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="100" name="tablaDeSimbolos">        
+        <position height="0" width="0" x="-819" y="685"/>      
+      </attribute>      
+      <multiplicity id="101" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-819" y="685"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="102">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="20"/>  
+  </dependency>  
+  <association id="103">    
+    <bendpoint x="857" y="1175"/>    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="104" name="ctrl">        
+        <position height="0" width="0" x="-772" y="260"/>      
+      </attribute>      
+      <multiplicity id="105" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-772" y="260"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="106">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="14"/>  
+  </realization>  
+  <dependency id="107">    
+    <bendpoint x="2568" y="1082"/>    
+    <bendpoint x="2566" y="160"/>    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="20"/>  
+  </dependency>  
+  <association id="108">    
+    <bendpoint x="214" y="707"/>    
+    <bendpoint x="217" y="1171"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="109" name="bs">        
+        <position height="0" width="0" x="7" y="421"/>      
+      </attribute>      
+      <multiplicity id="110" minimum="0" maximum="1">        
+        <position height="0" width="0" x="7" y="421"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="111">    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="112" name="ts">        
+        <position height="0" width="0" x="-1042" y="182"/>      
+      </attribute>      
+      <multiplicity id="113" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-1042" y="182"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="20" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="114">    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="19"/>  
+  </dependency>  
+  <association id="115">    
+    <bendpoint x="820" y="879"/>    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="116" name="ctrl">        
+        <position height="0" width="0" x="-772" y="260"/>      
+      </attribute>      
+      <multiplicity id="117" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-772" y="260"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="118">    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="119" name="areasDeCodigo">        
+        <position height="0" width="0" x="-76" y="364"/>      
+      </attribute>      
+      <multiplicity id="120" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-76" y="364"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="121">    
+    <bendpoint x="1966" y="394"/>    
+    <bendpoint x="2548" y="402"/>    
+    <bendpoint x="2548" y="988"/>    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="14"/>  
+  </dependency>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
     sort-features="false" accessors="true" visibility="true">    
     <attributes public="true" package="true" protected="true" private="true" static="true"/>    

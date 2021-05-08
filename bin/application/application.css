@@ -103,14 +103,12 @@
 	-fx-border-color: white;
 	-fx-background-insets: 0;
     -fx-padding: 0 3 0 3;
-    -fx-pref-height: 10;
     -fx-font-size: 8pt; 
 } 
 
 .text-field:focused{
 	-fx-background-color: rgb(232, 242,254);
 	-fx-border-color:rgb(232, 242,254);
-	-fx-font-weight: bold
 }
 
 
@@ -150,36 +148,10 @@
     -fx-max-height: 10px;
     -fx-font-size: 8pt; 
 }
-/*
- * 
- .ejecutar-boton {
-    -fx-content-display: graphic-only;
-    -icon-paint:rgb(46, 186, 64);
+
+.seleccionar{
+	-fx-background-color: rgb(232, 242, 254);
+	-fx-border-color:  rgb(232, 242, 254);
 }
 
 
-.ejecutar-boton .ejecutar-icono {
-    -fx-background-color: -icon-paint;
-    -size: 17;
-    -fx-min-height: -size;
-    -fx-min-width: -size;
-    -fx-max-height: -size;
-    -fx-max-width: -size;
-    -fx-shape: "M112 111v290c0 17.44 17 28.52 31 20.16l247.9-148.37c12.12-7.25 12.12-26.33 0-33.58L143 90.84c-14-8.36-31 2.72-31 20.16z";
-}
-
-.parar-boton {
-    -fx-content-display: graphic-only;
-    -icon-paint:rgb(252, 99, 93);
-}
-
-
-.parar-boton .parar-icono {
-    -fx-background-color: -icon-paint;
-    -size: 17;
-    -fx-min-height: -size;
-    -fx-min-width: -size;
-    -fx-max-height: -size;
-    -fx-max-width: -size;
-   }
- */

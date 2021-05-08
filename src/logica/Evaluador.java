@@ -12,7 +12,7 @@ public interface Evaluador {
 	static final String LOGICO = "verdadero|falso";
 	static final String TEXTO = "\"([^\"\\\\]|\\\\.)*\"";
 	static final String PARENTESIS = "\\(|\\)";
-	static final String OPERADOR = "\\^|\\/|\\*|\\+|\\-|\\%|\\=\\=|\\!\\=|\\>\\=|\\<\\=|\\<|\\>|\\&\\&|\\|\\|";
+	static final String OPERADOR = "\\^|\\/|\\*|\\+|\\-|\\%|\\=\\=|\\!\\=|\\>\\=|\\<\\=|\\<|\\>|\\!|\\&\\&|\\|\\|";
 
 	// private static final String COMENTARIO = "//[^\n]*" + "|" +
 	// "/\\*(.|\\R)*?\\*/";
@@ -23,7 +23,7 @@ public interface Evaluador {
 			+ ENTERO + ")" + "|(?<IDENTIFICADOR>" + IDENTIFICADOR + ")" + "|(?<TEXTO>" + TEXTO + ")" + "|(?<PARENTESIS>"
 			+ PARENTESIS + ")" + "|(?<OPERADOR>" + OPERADOR + ")");
 
-	public static Variable evaluar(String expresionPostFija, TablaDeSimbolos ts) {
+	public static Variable evaluar(String expresionPostFija, TablaDeSimbolos ts, int numeroLinea) {
 
 //		System.out.println(expresionPostFija);
 
@@ -48,6 +48,18 @@ public interface Evaluador {
 				} else {
 					lista.push(new Variable(comparador.group(), tipoDeDato, ""));
 				}
+			} else if (comparador.group().equals("!")) {
+				Variable operando1 = lista.peek();
+				lista.pop();
+				String resultado[] = operarNegacion(operando1.getValor());
+				if (resultado[0].equals("X")) {
+					return (new Variable("X",resultado[1] , ""));
+				}
+				String valor = resultado[0];
+				String tipo = resultado[1];
+//	DEBUG
+//				System.out.println("= " + valor + " " + tipo);
+				lista.push(new Variable(valor, tipo, ""));
 			} else if (lista.size() > 1) {
 				Variable operando2 = lista.peek();
 				lista.pop();
@@ -55,12 +67,12 @@ public interface Evaluador {
 				lista.pop();
 //	DEBUG
 //				System.out.println("A operar: ["+operando1.getValor() + "] " + comparador.group() + " [" + operando2.getValor()+"]");
-				System.out.println(operando1.getValor()+ " "+comparador.group()+ " "+operando2.getValor());
+//				System.out.println(operando1.getValor()+ " "+comparador.group()+ " "+operando2.getValor());
 				String resultado[] = operar(operando1.getValor(), operando1.getTipo(), comparador.group(),
-						operando2.getValor(), operando2.getTipo());
-				System.out.println(Arrays.toString(resultado));
+						operando2.getValor(), operando2.getTipo(), numeroLinea);
+//				System.out.println(Arrays.toString(resultado));
 				if (resultado[0].equals("X")) {
-					return (new Variable("X", "X", ""));
+					return (new Variable("X", resultado[1], ""));
 				}
 				String valor = resultado[0];
 				String tipo = resultado[1];
@@ -101,7 +113,16 @@ public interface Evaluador {
 					} else {
 						lista.push(tipoDeDato);
 					}
+				} else if (comparador.group().equals("!")) {
+					String operando1Tipo = lista.peek();
+					lista.pop();
+					if (operando1Tipo.equals("L")) {
+						lista.push("L");
+					} else {
+						return vec;
+					}
 				} else if (lista.size() > 1) {
+
 					String operando2Tipo = lista.peek();
 					lista.pop();
 					String operando1Tipo = lista.peek();
@@ -111,7 +132,6 @@ public interface Evaluador {
 					// operando2.getValor());
 
 					String resultado = operar(operando1Tipo, comparador.group(), operando2Tipo);
-
 					if (resultado.equals("X")) {
 						return vec;
 					}
@@ -129,7 +149,21 @@ public interface Evaluador {
 		return vec;
 	}
 
-	public static String[] operar(String operando1, String tipo1, String operador, String operando2, String tipo2) {
+	public static String[] operarNegacion(String valor) {
+		String vec[] = new String[2];
+		if (valor.equals("falso")) {
+			vec[0] = "verdadero";
+		} else if (valor.equals("verdadero")) {
+			vec[0] = "falso";
+		} else {
+			vec[0] = "X";
+		}
+		vec[1] = "L";
+		return vec;
+
+	}
+
+	public static String[] operar(String operando1, String tipo1, String operador, String operando2, String tipo2, int numeroLinea) {
 
 		int operando1Entero = 0;
 		double operando1Decimal = 0;
@@ -140,6 +174,7 @@ public interface Evaluador {
 		double operando2Decimal = 0;
 		boolean operando2Logico = false;
 		String operando2Texto = "";
+		String vec[] = new String[2];
 //		System.out.println(operando1+ " "+tipo1 );
 
 		try {
@@ -150,7 +185,10 @@ public interface Evaluador {
 					try {
 						operando1Entero = (int) Double.parseDouble(operando1);
 					} catch (Exception e3) {
-
+						// ERROR
+						vec[0] = "X";
+						vec[1] = "ERROR L"+numeroLinea+": Error al tranformar a entero " + operando1;
+						return vec;
 					}
 				}
 			} else if (tipo1.equals("R")) {
@@ -171,7 +209,10 @@ public interface Evaluador {
 					try {
 						operando2Entero = (int) Double.parseDouble(operando2);
 					} catch (Exception e2) {
-
+						// ERROR
+						vec[0] = "X";
+						vec[1] = "ERROR L"+numeroLinea+": Error al tranformar a entero " + operando2;
+						return vec;
 					}
 				}
 			} else if (tipo2.equals("R")) {
@@ -186,10 +227,14 @@ public interface Evaluador {
 				operando2Texto = operando2;
 			}
 		} catch (Exception e) {
-			System.out.println("Error al convertir: "+e.toString());
+			// ERROR
+			// ERROR
+			vec[0] = "X";
+			vec[1] = "ERROR L"+numeroLinea+": Error al convertir "+ e.toString();
+			return vec;
 		}
 		/************************ OPERANDO *************************************/
-		String vec[] = new String[2];
+
 		try {
 
 			if (tipo1.equals("R") && tipo2.equals("E")) {
@@ -600,11 +645,15 @@ public interface Evaluador {
 
 			}
 		} catch (Exception e) {
-			System.out.println("Error al operar: "+e.toString());
+			// ERROR
+			vec[0] = "X";
+			vec[1] = "ERROR L"+numeroLinea+": Error al operar '"+operando1+operador+operando2+"' - "+ e.toString();
+
+			return vec;
 		}
 		vec[0] = "X";
 		vec[1] = "X";
-		
+
 		return vec;
 	}
 
@@ -841,13 +890,53 @@ public interface Evaluador {
 		return vec;
 	}
 
-	public static String convertir(String valor, String tipo) {
+//	public static String convertir(String valor, String tipo) {
+//		if (tipo.equals("E")) {
+//			try {
+//				String rta = Integer.parseInt(valor) + "";
+//				return rta;
+//			} catch (Exception e) {
+//				try {
+//					String rta = ((int)Double.parseDouble(valor))+"";
+//					return rta;
+//				} catch (Exception e2) {
+//					return "";
+//					// TODO: handle exception
+//				}
+//				
+//			}
+//		} else if (tipo.equals("R")) {
+//			try {
+//				String rta = Double.parseDouble(valor) + "";
+//				return rta;
+//			} catch (Exception e) {
+//				return "";
+//			}
+//		} else if (tipo.equals("L")) {
+//			try {
+//				String rta = Boolean.parseBoolean(valor) + "";
+//				return rta;
+//			} catch (Exception e) {
+//				return "";
+//			}
+//		}
+//		return valor;
+//	}
+
+	public static String convertirEnAlgoritmo(String valor, String tipo) {
 		if (tipo.equals("E")) {
 			try {
 				String rta = Integer.parseInt(valor) + "";
 				return rta;
 			} catch (Exception e) {
-				return "";
+				try {
+					String rta = ((int) Double.parseDouble(valor)) + "";
+					return rta;
+				} catch (Exception e2) {
+					return "";
+					// TODO: handle exception
+				}
+
 			}
 		} else if (tipo.equals("R")) {
 			try {
@@ -858,8 +947,13 @@ public interface Evaluador {
 			}
 		} else if (tipo.equals("L")) {
 			try {
-				String rta = Boolean.parseBoolean(valor) + "";
-				return rta;
+				if (valor.equals("verdadero")) {
+					return "verdadero";
+				} else if (valor.equals("falso")) {
+					return "falso";
+				} else {
+					return "";
+				}
 			} catch (Exception e) {
 				return "";
 			}

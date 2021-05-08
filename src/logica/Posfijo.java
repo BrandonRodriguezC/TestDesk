@@ -14,7 +14,7 @@ public interface Posfijo {
 	static final String TEXTO = "\"([^\"\\\\]|\\\\.)*\"";
 	static final String PARENTESIS = "\\(|\\)";
 	/** REVISAR =! */
-	static final String OPERADOR = "\\^|\\/|\\*|\\+|\\-|\\%|\\=\\=|\\!\\=|\\>\\=|\\<\\=|\\<|\\>|\\&\\&|\\|\\|";
+	static final String OPERADOR = "\\^|\\/|\\*|\\+|\\-|\\%|\\=\\=|\\!\\=|\\>\\=|\\<\\=|\\<|\\>|\\!|\\&\\&|\\|\\|";
 
 	// private static final String COMENTARIO = "//[^\n]*" + "|" +
 	// "/\\*(.|\\R)*?\\*/";
@@ -149,9 +149,9 @@ public interface Posfijo {
 				: (operador.matches("\\&\\&")) ? 2
 				: (operador.matches("\\=\\=|\\!\\=|\\>|\\<|\\<\\=|\\>\\=")) ? 3
 				: (operador.matches("\\+|\\-")) ? 4
-				: (operador.matches("\\%")) ? 6
-				: (operador.matches("\\*|\\/")) ? 6
-				: (operador.matches("\\^")) ? 7
+				: (operador.matches("\\*|\\/|\\%")) ? 5
+				: (operador.matches("\\^")) ? 6
+				: (operador.matches("\\!")) ? 7
 				: (operador.matches("\\(|\\)")) ? 8 : 0;
 		return rta;
 	}

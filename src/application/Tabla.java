@@ -2,6 +2,7 @@ package application;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -14,13 +15,15 @@ import javafx.scene.shape.Rectangle;
 public class Tabla extends ScrollPane{
 	ArrayList<String> nombresVariables;
 	GridPane contenido;
-	Graphics g;
-	int tamaño, filas, ancho= 120, objetos, tamañoTab;
+	
+	int tamaño, filas, ancho, objetos, tamañoTab;
 	
 	public Tabla() {
 		filas=0;
 		objetos=0;
 		contenido= new GridPane();
+		ancho=120;
+		contenido.setVgap(0);
 		setContent(contenido);
 	}
 	
@@ -28,8 +31,8 @@ public class Tabla extends ScrollPane{
 		nombresVariables= nombres;
 		tamaño= nombres.size();
 		objetos=0;
+		ancho= 120;
 		if( tamañoTab/tamaño >= 120 ) {
-			/** REVISAR TAMAÑO DE PANEL**/
 			ancho= (int) tamañoTab/tamaño ; 
 		}
 		

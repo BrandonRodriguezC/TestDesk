@@ -12,40 +12,40 @@ import javafx.scene.control.MenuItem;
 
 public class InsertMenu extends javafx.scene.control.ContextMenu {
 
-	private final MenuItem ifCM = new MenuItem("Si");
-	private final MenuItem ifDCM = new MenuItem("Si ~ Sino");
+//	private final MenuItem enteroDA = new MenuItem("Entero");
+//	private final MenuItem logicoDA = new MenuItem("Logico");
+//	private final MenuItem realDA = new MenuItem("Real");
+//	private final MenuItem textoDA = new MenuItem("Texto");
+//	private final MenuItem todoCM = new MenuItem("Todo");
+//	private final MenuItem comentarioCM = new MenuItem("Comentario");
 
-	private final MenuItem whileCM = new MenuItem("Mientras");
-	private final MenuItem forCM = new MenuItem("Repetir");
-
-	private final MenuItem sdlCM = new MenuItem("Salto de linea");
-
-	private final MenuItem enteroDA = new MenuItem("Entero");
-	private final MenuItem logicoDA = new MenuItem("Logico");
-	private final MenuItem realDA = new MenuItem("Real");
-	private final MenuItem textoDA = new MenuItem("Texto");
-
+	
+	private final Menu edicionCM = new Menu("Edición");
+	private final MenuItem sdlCM = new MenuItem("Nueva línea");
+	private final MenuItem borrar = new MenuItem("Eliminar línea o bloque");
+	
+	private final Menu declaracionCM = new Menu("Declaración de variables");
 	private final MenuItem enteroD = new MenuItem("Entero");
-	private final MenuItem logicoD = new MenuItem("Logico");
+	private final MenuItem logicoD = new MenuItem("Lógica");
 	private final MenuItem realD = new MenuItem("Real");
 	private final MenuItem textoD = new MenuItem("Texto");
-
+	
+	private final Menu primitivasCM = new Menu("Primitivas");
+	private final Menu primitivasSimplesCM = new Menu("Simples");
+	private final MenuItem metodoLeer = new MenuItem("Lectura");
+	private final MenuItem metodoEscribir = new MenuItem("Escritura");
 	private final MenuItem asigCM = new MenuItem("Asignación");
-
-	private final MenuItem todoCM = new MenuItem("Todo");
-
-	private final MenuItem comentarioCM = new MenuItem("Comentario");
-
-	private final MenuItem metodoEscribir = new MenuItem("Escribir");
-	private final MenuItem metodoLeer = new MenuItem("Leer");
-
-	private final MenuItem borrar = new MenuItem("Eliminar");
-
-	private final Menu declCM = new Menu("Declaración");
-	private final Menu declAsigCM = new Menu("Declaración y asignación");
-	private final Menu cicloCM = new Menu("Ciclo");
-	private final Menu condicionalCM = new Menu("Condicional");
-
+	
+	private final Menu primitivasBloqueCM = new Menu("Bloque");
+	private final Menu primitivasBloqueCondicionalesCM = new Menu("Condicionales");
+	private final MenuItem ifCM = new MenuItem("Si simple");
+	private final MenuItem ifDCM = new MenuItem("Si sino");
+	
+	private final Menu primitivasBloqueCiclosCM = new Menu("Ciclos");
+	private final MenuItem forCM = new MenuItem("Repetir");
+	private final MenuItem whileCM = new MenuItem("Mientras que");
+	
+	
 	private static final String ESCRIBIRstatement = "escribir(      );";
 	private static final String LEERstatement = "       = leer( );";
 
@@ -76,31 +76,37 @@ public class InsertMenu extends javafx.scene.control.ContextMenu {
 	private static final String COMENTARIOFINstatement = "\n**/";
 	private static final String COMENTARIOstatement = COMENTARIOINICIOstatement + COMENTARIOFINstatement;
 	private ArrayList<Integer> rangoBloques;
-
+	private CodeArea ca;
+	
 	public InsertMenu(CodeArea ca) {
+		this.ca=ca;
 		rangoBloques = new ArrayList<Integer>();
 
-		declCM.getItems().addAll(enteroD, logicoD, realD, textoD);
-		declAsigCM.getItems().addAll(enteroDA, logicoDA, realDA, textoDA);
-		cicloCM.getItems().addAll(whileCM, forCM);
-		condicionalCM.getItems().addAll(ifCM, ifDCM);
+		edicionCM.getItems().addAll(sdlCM, borrar);
+		declaracionCM.getItems().addAll(enteroD, logicoD, realD, textoD);
+		primitivasCM.getItems().addAll(primitivasSimplesCM,primitivasBloqueCM );
+		primitivasSimplesCM.getItems().addAll(metodoLeer,metodoEscribir,asigCM);
+		primitivasBloqueCM.getItems().addAll(primitivasBloqueCondicionalesCM,primitivasBloqueCiclosCM);
+		primitivasBloqueCondicionalesCM.getItems().addAll(ifCM, ifDCM);
+		primitivasBloqueCiclosCM.getItems().addAll(forCM, whileCM);
+		
 
 		/** --------------------------- COMENTARIO ------------------------------- **/
 
-		comentarioCM.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				int actual = ca.getCaretOffset();
-				String linea = ca.getContent().getLine(ca.getLineAtOffset(actual));
-				
-				if (!linea.contains(";") && !linea.contains("(") && !linea.contains("}") && !linea.contains("{")
-						&& !linea.contains("sino")) {
-					String estructura = COMENTARIOstatement;
-					ca.añadirEstructura(estructura);
-				}
-				
-			}
-		});
+//		comentarioCM.setOnAction(new EventHandler<ActionEvent>() {
+//			@Override
+//			public void handle(ActionEvent event) {
+//				int actual = ca.getCaretOffset();
+//				String linea = ca.getContent().getLine(ca.getLineAtOffset(actual));
+//				
+//				if (!linea.contains(";") && !linea.contains("(") && !linea.contains("}") && !linea.contains("{")
+//						&& !linea.contains("sino")) {
+//					String estructura = COMENTARIOstatement;
+//					ca.añadirEstructura(estructura);
+//				}
+//				
+//			}
+//		});
 
 		/** --------------------------- CONDICIONALES ----------------------------- **/
 
@@ -209,75 +215,75 @@ public class InsertMenu extends javafx.scene.control.ContextMenu {
 
 		/** --------------------------- DECLARACION Y ASIGNACION ----------------- **/
 
-		enteroDA.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				int actual = ca.getCaretOffset();
-				String linea = ca.getContent().getLine(ca.getLineAtOffset(ca.getCaretOffset()));
-				
-				if (!linea.contains(";") && !linea.contains("(") && !linea.contains("}") && !linea.contains("{")
-						&& !linea.contains("sino")) {
-					int tab = tabsAnidamientos(actual);
-
-					int diferencia = tab != 0 ? diferencia(linea) : 0;
-
-					String estructura=  construirBloque(ENTEROstatement, tab - diferencia);
-					ca.añadirEstructura(estructura);
-				}
-				
-			}
-		});
-
-		realDA.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				int actual = ca.getCaretOffset();
-				String linea = ca.getContent().getLine(ca.getLineAtOffset(ca.getCaretOffset()));
-				
-				if (!linea.contains(";") && !linea.contains("(") && !linea.contains("}") && !linea.contains("{")
-						&& !linea.contains("sino")) {
-					int tab = tabsAnidamientos(actual);
-					int diferencia = tab != 0 ? diferencia(linea) : 0;
-					String estructura=  construirBloque(DECIMALstatement, tab - diferencia);
-					ca.añadirEstructura(estructura);
-				}
-				
-			}
-		});
-
-		textoDA.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				int actual = ca.getCaretOffset();
-				String linea = ca.getContent().getLine(ca.getLineAtOffset(ca.getCaretOffset()));
-				
-				if (!linea.contains(";") && !linea.contains("(") && !linea.contains("}") && !linea.contains("{")
-						&& !linea.contains("sino")) {
-					int tab = tabsAnidamientos(actual);
-					int diferencia = tab != 0 ? diferencia(linea) : 0;
-					String estructura= construirBloque(TEXTOstatement, tab - diferencia);
-					ca.añadirEstructura(estructura);
-				}
-				
-			}
-		});
-
-		logicoDA.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				int actual = ca.getCaretOffset();
-				String linea = ca.getContent().getLine(ca.getLineAtOffset(ca.getCaretOffset()));
-				
-				if (!linea.contains(";") && !linea.contains("(") && !linea.contains("}") && !linea.contains("{")
-						&& !linea.contains("sino")) {
-					int tab = tabsAnidamientos(actual);
-					int diferencia = tab != 0 ? diferencia(linea) : 0;
-					String estructura=construirBloque(LOGICOstatement, tab - diferencia);
-					ca.añadirEstructura(estructura);
-				}
-				
-			}
-		});
+//		enteroDA.setOnAction(new EventHandler<ActionEvent>() {
+//			@Override
+//			public void handle(ActionEvent event) {
+//				int actual = ca.getCaretOffset();
+//				String linea = ca.getContent().getLine(ca.getLineAtOffset(ca.getCaretOffset()));
+//				
+//				if (!linea.contains(";") && !linea.contains("(") && !linea.contains("}") && !linea.contains("{")
+//						&& !linea.contains("sino")) {
+//					int tab = tabsAnidamientos(actual);
+//
+//					int diferencia = tab != 0 ? diferencia(linea) : 0;
+//
+//					String estructura=  construirBloque(ENTEROstatement, tab - diferencia);
+//					ca.añadirEstructura(estructura);
+//				}
+//				
+//			}
+//		});
+//
+//		realDA.setOnAction(new EventHandler<ActionEvent>() {
+//			@Override
+//			public void handle(ActionEvent event) {
+//				int actual = ca.getCaretOffset();
+//				String linea = ca.getContent().getLine(ca.getLineAtOffset(ca.getCaretOffset()));
+//				
+//				if (!linea.contains(";") && !linea.contains("(") && !linea.contains("}") && !linea.contains("{")
+//						&& !linea.contains("sino")) {
+//					int tab = tabsAnidamientos(actual);
+//					int diferencia = tab != 0 ? diferencia(linea) : 0;
+//					String estructura=  construirBloque(DECIMALstatement, tab - diferencia);
+//					ca.añadirEstructura(estructura);
+//				}
+//				
+//			}
+//		});
+//
+//		textoDA.setOnAction(new EventHandler<ActionEvent>() {
+//			@Override
+//			public void handle(ActionEvent event) {
+//				int actual = ca.getCaretOffset();
+//				String linea = ca.getContent().getLine(ca.getLineAtOffset(ca.getCaretOffset()));
+//				
+//				if (!linea.contains(";") && !linea.contains("(") && !linea.contains("}") && !linea.contains("{")
+//						&& !linea.contains("sino")) {
+//					int tab = tabsAnidamientos(actual);
+//					int diferencia = tab != 0 ? diferencia(linea) : 0;
+//					String estructura= construirBloque(TEXTOstatement, tab - diferencia);
+//					ca.añadirEstructura(estructura);
+//				}
+//				
+//			}
+//		});
+//
+//		logicoDA.setOnAction(new EventHandler<ActionEvent>() {
+//			@Override
+//			public void handle(ActionEvent event) {
+//				int actual = ca.getCaretOffset();
+//				String linea = ca.getContent().getLine(ca.getLineAtOffset(ca.getCaretOffset()));
+//				
+//				if (!linea.contains(";") && !linea.contains("(") && !linea.contains("}") && !linea.contains("{")
+//						&& !linea.contains("sino")) {
+//					int tab = tabsAnidamientos(actual);
+//					int diferencia = tab != 0 ? diferencia(linea) : 0;
+//					String estructura=construirBloque(LOGICOstatement, tab - diferencia);
+//					ca.añadirEstructura(estructura);
+//				}
+//				
+//			}
+//		});
 
 		/** --------------------------- SALTO DE LINEA ---------------------------- **/
 
@@ -375,65 +381,65 @@ public class InsertMenu extends javafx.scene.control.ContextMenu {
 
 		/** --------------------------- PLANTILLA --------------------------------- **/
 
-		todoCM.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				String linea = ca.getContent().getLine(ca.getLineAtOffset(ca.getCaretOffset()));
-				
-				if (!linea.contains(";") && !linea.contains("(") && !linea.contains("}") && !linea.contains("{")
-						&& !linea.contains("sino")) {
-					String estructura = 
-
-							ENTEROstatement + SALTODELINEAstatement + 
-							DECIMALstatement + SALTODELINEAstatement + 
-							TEXTOstatement + SALTODELINEAstatement + 
-							LOGICOstatement + SALTODELINEAstatement +
-							
-							SALTODELINEAstatement +  
-							
-							declaracionENTEROstatement + SALTODELINEAstatement +
-							declaracionDECIMALstatement + SALTODELINEAstatement +
-							declaracionLOGICOstatement + SALTODELINEAstatement + 
-							declaracionTEXTOstatement + SALTODELINEAstatement + 
-
-							SALTODELINEAstatement +
-
-							ASIGNACIONstatement + SALTODELINEAstatement + 
-							
-							SALTODELINEAstatement +
-							
-							LEERstatement+ SALTODELINEAstatement +
-							
-							ESCRIBIRstatement+ SALTODELINEAstatement +
-							
-							SALTODELINEAstatement +
-							
-
-							IFstatement + SALTODELINEAstatement + CORCHETEAsimbolo + SALTODELINEAstatement
-							+ SALTODELINEAstatement + SALTODELINEAstatement + SALTODELINEAstatement + CORCHETECsimbolo
-
-							+ SALTODELINEAstatement + SALTODELINEAstatement
-
-							+ IFstatement + SALTODELINEAstatement + CORCHETEAsimbolo + SALTODELINEAstatement
-							+ SALTODELINEAstatement + SALTODELINEAstatement + SALTODELINEAstatement + CORCHETECsimbolo
-							+ SALTODELINEAstatement + ELSEstatement + SALTODELINEAstatement + CORCHETEAsimbolo
-							+ SALTODELINEAstatement + SALTODELINEAstatement + SALTODELINEAstatement
-							+ SALTODELINEAstatement + CORCHETECsimbolo
-
-							+ SALTODELINEAstatement + SALTODELINEAstatement
-
-							+ WHILEstatement + SALTODELINEAstatement + CORCHETEAsimbolo + SALTODELINEAstatement
-							+ SALTODELINEAstatement + SALTODELINEAstatement + SALTODELINEAstatement + CORCHETECsimbolo
-
-							+ SALTODELINEAstatement + SALTODELINEAstatement
-
-							+ FORstatement + SALTODELINEAstatement + CORCHETEAsimbolo + SALTODELINEAstatement
-							+ SALTODELINEAstatement + SALTODELINEAstatement + SALTODELINEAstatement + CORCHETECsimbolo;
-					
-					ca.añadirEstructura(estructura);
-				}
-			}
-		});
+//		todoCM.setOnAction(new EventHandler<ActionEvent>() {
+//			@Override
+//			public void handle(ActionEvent event) {
+//				String linea = ca.getContent().getLine(ca.getLineAtOffset(ca.getCaretOffset()));
+//				
+//				if (!linea.contains(";") && !linea.contains("(") && !linea.contains("}") && !linea.contains("{")
+//						&& !linea.contains("sino")) {
+//					String estructura = 
+//
+//							ENTEROstatement + SALTODELINEAstatement + 
+//							DECIMALstatement + SALTODELINEAstatement + 
+//							TEXTOstatement + SALTODELINEAstatement + 
+//							LOGICOstatement + SALTODELINEAstatement +
+//							
+//							SALTODELINEAstatement +  
+//							
+//							declaracionENTEROstatement + SALTODELINEAstatement +
+//							declaracionDECIMALstatement + SALTODELINEAstatement +
+//							declaracionLOGICOstatement + SALTODELINEAstatement + 
+//							declaracionTEXTOstatement + SALTODELINEAstatement + 
+//
+//							SALTODELINEAstatement +
+//
+//							ASIGNACIONstatement + SALTODELINEAstatement + 
+//							
+//							SALTODELINEAstatement +
+//							
+//							LEERstatement+ SALTODELINEAstatement +
+//							
+//							ESCRIBIRstatement+ SALTODELINEAstatement +
+//							
+//							SALTODELINEAstatement +
+//							
+//
+//							IFstatement + SALTODELINEAstatement + CORCHETEAsimbolo + SALTODELINEAstatement
+//							+ SALTODELINEAstatement + SALTODELINEAstatement + SALTODELINEAstatement + CORCHETECsimbolo
+//
+//							+ SALTODELINEAstatement + SALTODELINEAstatement
+//
+//							+ IFstatement + SALTODELINEAstatement + CORCHETEAsimbolo + SALTODELINEAstatement
+//							+ SALTODELINEAstatement + SALTODELINEAstatement + SALTODELINEAstatement + CORCHETECsimbolo
+//							+ SALTODELINEAstatement + ELSEstatement + SALTODELINEAstatement + CORCHETEAsimbolo
+//							+ SALTODELINEAstatement + SALTODELINEAstatement + SALTODELINEAstatement
+//							+ SALTODELINEAstatement + CORCHETECsimbolo
+//
+//							+ SALTODELINEAstatement + SALTODELINEAstatement
+//
+//							+ WHILEstatement + SALTODELINEAstatement + CORCHETEAsimbolo + SALTODELINEAstatement
+//							+ SALTODELINEAstatement + SALTODELINEAstatement + SALTODELINEAstatement + CORCHETECsimbolo
+//
+//							+ SALTODELINEAstatement + SALTODELINEAstatement
+//
+//							+ FORstatement + SALTODELINEAstatement + CORCHETEAsimbolo + SALTODELINEAstatement
+//							+ SALTODELINEAstatement + SALTODELINEAstatement + SALTODELINEAstatement + CORCHETECsimbolo;
+//					
+//					ca.añadirEstructura(estructura);
+//				}
+//			}
+//		});
 
 		/** --------------------------- DECLARACIÓN ------------------------------- **/
 		enteroD.setOnAction(new EventHandler<ActionEvent>() {
@@ -506,66 +512,123 @@ public class InsertMenu extends javafx.scene.control.ContextMenu {
 			@Override
 			public void handle(ActionEvent event) {
 				int actual = ca.getCaretOffset();
-				boolean bloque = false;
-				int indice = 0;
-				int tamaño = rangoBloques.size();
-				String linea = ca.getContent().getLine(ca.getContent().getLineAtOffset(actual));
-				StyledTextContent stc = ca.getContent();
-				int limiteAceptacion1par = 0, limiteAceptacion2par = 0, limiteAceptacion1impar = 0,
-						limiteAceptacion2impar = 0, lineaRango = 0;
-				int inicio = 0, fin = 0;
-				if (linea.contains("si (") || linea.contains("mientras que (") || linea.contains("repetir (") || linea.contains("sino")
-						|| linea.contains("{") || linea.contains("}")) {
-					while (!bloque && indice < tamaño) {
-						if (indice % 2 == 0) {
-							limiteAceptacion1par = stc
-									.getOffsetAtLine(stc.getLineAtOffset(rangoBloques.get(indice)) - 1);
-							lineaRango = stc.getLineAtOffset(rangoBloques.get(indice));
-							limiteAceptacion2par = stc.getOffsetAtLine(lineaRango) + stc.getLine(lineaRango).length();
-							if (limiteAceptacion1par <= actual && actual <= limiteAceptacion2par) {
-								bloque = true;
-								inicio = limiteAceptacion1par;
-								int aux = stc.getLineAtOffset(rangoBloques.get(indice + 1));
-								fin = stc.getOffsetAtLine(aux) + stc.getLine(aux).length();
-								ca.eliminarBloque(inicio, fin);
-							}
-						} else {
-							lineaRango = stc.getLineAtOffset(rangoBloques.get(indice));
-							limiteAceptacion1impar = stc.getOffsetAtLine(lineaRango);
-							limiteAceptacion2impar = stc.getOffsetAtLine(lineaRango) + stc.getLine(lineaRango).length();
-							if (limiteAceptacion1impar <= actual && actual <= limiteAceptacion2impar) {
-								bloque = true;
-								int aux = stc.getLineAtOffset(rangoBloques.get(indice - 1)) - 1;
-								inicio = stc.getOffsetAtLine(aux);
-								fin = limiteAceptacion2impar;
-								ca.eliminarBloque(inicio, fin);
-							}
-						}
-						indice++;
-					}
-
-				} else {
-					inicio = ca.getContent().getOffsetAtLine(ca.getLineAtOffset(actual));
-					fin = inicio + linea.length();
-					if(linea.isEmpty()) {
-						fin= inicio+1;
-					}
-					ca.eliminarBloque(inicio, fin);
-				}
-				
-				ca.limpiar_actualizar();
-				
+				borrar(actual);
 			}
 		});
+		
+		
+//		if (limiteAceptacion1par <= actual && actual <= limiteAceptacion2par) {
+//			bloque = true;
+//			inicio = limiteAceptacion1par;
+//			int aux = stc.getLineAtOffset(rangoBloques.get(indice + 1));
+//			if (linea.contains("si")) {
+//				String siguienteLinea = "";
+//				try {
+//					siguienteLinea = stc.getLine(aux+1);
+//				} catch (Exception e) {
+//					// TODO: handle exception
+//				}
+//				
+//				if (siguienteLinea.contains("sino")) {
+//					fin = stc.getOffsetAtLine(aux) + stc.getLine(aux).length();
+//				}else {
+//					fin = stc.getOffsetAtLine(aux) + stc.getLine(aux).length();
+//					ca.eliminarBloque(inicio, fin);
+//				}
+//			}else {
+//				fin = stc.getOffsetAtLine(aux) + stc.getLine(aux).length();
+//				ca.eliminarBloque(inicio, fin);
+//			}
+//		}
+		
 
-		getItems().addAll(sdlCM, declCM
-//				, declAsigCM
-				, asigCM, condicionalCM, cicloCM 
-//				,todoCM
-				, comentarioCM,
-				metodoEscribir, metodoLeer, borrar);
+		getItems().addAll(edicionCM, declaracionCM, primitivasCM);
 	}
 
+	
+	private void borrar(int actual) {
+		boolean bloque = false;
+		int indice = 0;
+		int tamaño = rangoBloques.size();
+		String linea = ca.getContent().getLine(ca.getContent().getLineAtOffset(actual));
+		StyledTextContent stc = ca.getContent();
+		int limiteAceptacion1par = 0, limiteAceptacion2par = 0, limiteAceptacion1impar = 0,
+				limiteAceptacion2impar = 0, lineaRango = 0;
+		int inicio = 0, fin = 0;
+		if (linea.contains("si (") || linea.contains("mientras que (") || linea.contains("repetir (") || linea.contains("sino")
+				|| linea.contains("{") || linea.contains("}")) {
+			while (!bloque && indice < tamaño) {
+				if (indice % 2 == 0) {
+					limiteAceptacion1par = stc.getOffsetAtLine(stc.getLineAtOffset(rangoBloques.get(indice)) - 1);
+					lineaRango = stc.getLineAtOffset(rangoBloques.get(indice));
+					limiteAceptacion2par = stc.getOffsetAtLine(lineaRango) + stc.getLine(lineaRango).length();
+					if (limiteAceptacion1par <= actual && actual <= limiteAceptacion2par) {
+						bloque = true;
+						int aux = stc.getLineAtOffset(rangoBloques.get(indice + 1));
+						if (stc.getLine(stc.getLineAtOffset(rangoBloques.get(indice)) - 1).contains("si (")) {
+							
+							int lineaSiguiente = aux+1;
+							String lineaSiguienteString= "";
+							try {
+								lineaSiguienteString = stc.getLine(lineaSiguiente);
+								
+							} catch (Exception e) {
+								// TODO: handle exception
+							}
+							if (lineaSiguienteString.contains("sino")) {
+								borrar(stc.getOffsetAtLine(lineaSiguiente));
+							}
+							inicio = limiteAceptacion1par;
+							fin = stc.getOffsetAtLine(aux) + stc.getLine(aux).length();
+						}else {
+							inicio = limiteAceptacion1par;
+							fin = stc.getOffsetAtLine(aux) + stc.getLine(aux).length();
+						}
+						
+						ca.eliminarBloque(inicio, fin);
+					}
+				} else {
+					lineaRango = stc.getLineAtOffset(rangoBloques.get(indice));
+					limiteAceptacion1impar = stc.getOffsetAtLine(lineaRango);
+					limiteAceptacion2impar = stc.getOffsetAtLine(lineaRango) + stc.getLine(lineaRango).length();
+					if (limiteAceptacion1impar <= actual && actual <= limiteAceptacion2impar) {
+						bloque = true;
+						int aux = stc.getLineAtOffset(rangoBloques.get(indice - 1)) - 1;
+						if (stc.getLine(aux).contains("si (")) {
+							int lineaSiguiente = stc.getLineAtOffset(rangoBloques.get(indice))+1;
+							String lineaSiguienteString= "";
+							try {
+								lineaSiguienteString = stc.getLine(lineaSiguiente);
+								
+							} catch (Exception e) {
+								// TODO: handle exception
+							}
+							if (lineaSiguienteString.contains("sino")) {
+								borrar(stc.getOffsetAtLine(lineaSiguiente));
+							}
+							inicio = stc.getOffsetAtLine(aux);
+							fin = limiteAceptacion2impar;
+						}else {
+							inicio = stc.getOffsetAtLine(aux);
+							fin = limiteAceptacion2impar;
+						}
+						ca.eliminarBloque(inicio, fin);
+					}
+				}
+				indice++;
+			}
+		} else {
+			inicio = ca.getContent().getOffsetAtLine(ca.getLineAtOffset(actual));
+			fin = inicio + linea.length();
+			if(linea.isEmpty()) {
+				fin= inicio+1;
+			}
+			ca.eliminarBloque(inicio, fin);
+		}
+		
+		ca.limpiar_actualizar();
+	}
+	
 	private String construirBloque(String parte, int tab) {
 		char tabs [] = new char [tab];
 		Arrays.fill(tabs, '\t');

@@ -6,6 +6,9 @@ import java.util.Arrays;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
@@ -13,7 +16,7 @@ public class Consolas extends TabPane {
 
 	Tab pestañaConsolaDeErrores, pestañaConsolaDeEntradas, pestañaManual;
 //	pestañaEstructura
-	TextArea consolaErrores; 
+	TextArea consolaErrores;
 //	consolaEstructura;
 	ConsolaEntradas areaEntrada;
 	int numeroDeLineas;
@@ -22,10 +25,10 @@ public class Consolas extends TabPane {
 	public Consolas() {
 		consolaErrores = new TextArea();
 		consolaErrores.setEditable(false);
-		pestañaConsolaDeErrores = new Tab("Consola de Información", consolaErrores);
+		pestañaConsolaDeErrores = new Tab("Consola de información", consolaErrores);
 
 		areaEntrada = new ConsolaEntradas();
-		pestañaConsolaDeEntradas = new Tab("Consola de Entradas", areaEntrada);
+		pestañaConsolaDeEntradas = new Tab("Consola de entradas y salidas", areaEntrada);
 		widthProperty().addListener((observable, oldValue, newValue) -> {
 			areaEntrada.actualizarTamaño(newValue.doubleValue());
 
@@ -34,14 +37,13 @@ public class Consolas extends TabPane {
 //		consolaEstructura = new TextArea();
 //		consolaEstructura.setEditable(false);
 //		pestañaEstructura = new Tab("Estructura", consolaEstructura);
-		
-		//no carga pagina 
+
+		// no carga pagina
 		WebView wb = new WebView();
 		WebEngine webEngine = wb.getEngine();
 		webEngine.load("/webview/index.html");
 		pestañaManual = new Tab("Manual", wb);
-		
-		
+
 		pestañaConsolaDeErrores.setClosable(false);
 		pestañaConsolaDeEntradas.setClosable(false);
 //		pestañaEstructura.setClosable(false);
@@ -49,7 +51,7 @@ public class Consolas extends TabPane {
 
 		getTabs().addAll(pestañaConsolaDeErrores, pestañaConsolaDeEntradas
 //				, pestañaEstructura
-				);
+		);
 
 		setPrefWidth(400);
 		numeroDeLineas = 0;
@@ -60,15 +62,15 @@ public class Consolas extends TabPane {
 		StringBuilder sb = new StringBuilder();
 //		System.out.println(Arrays.toString(errores.toArray()));
 		for (int i = 0; i < errores.size(); i++) {
-			if (desarrollador ) {
+			if (desarrollador) {
 				sb.append(errores.get(i)).append('\n');
-			} else if (errores.get(i).contains("ERROR") || errores.get(i).contains("EJECUCIÓN:")) {
+			} else if (errores.get(i).contains("ERROR L") || errores.get(i).contains("EJECUCIÓN:")) {
 				sb.append(errores.get(i)).append('\n');
-				
+
 			}
-			
+
 		}
-		
+
 		consolaErrores.setText(sb.toString());
 	}
 
@@ -101,7 +103,21 @@ public class Consolas extends TabPane {
 		}
 	}
 	
-	public void ponerCursor(int fila ) {
+	
+	public void señalarLinea(int numeroDeLineas) {
+		areaEntrada.señalarLinea(numeroDeLineas);
+	}
+	
+
+	public void mostrarEscritura() {
+		getSelectionModel().select(pestañaConsolaDeEntradas);
+	}
+
+	public void mostrarInformacion() {
+		getSelectionModel().select(pestañaConsolaDeErrores);	
+	}
+
+	public void ponerCursor(int fila) {
 		areaEntrada.ponerCursor(fila);
 	}
 
@@ -124,5 +140,7 @@ public class Consolas extends TabPane {
 	public void setDesarrollador(boolean desarrollador) {
 		this.desarrollador = desarrollador;
 	}
-
+	public void setLineaAnterior(int linea) {
+		areaEntrada.setLineaAnterior(linea);
+	}
 }
