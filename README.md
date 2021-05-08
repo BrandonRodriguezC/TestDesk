@@ -18,7 +18,7 @@ Para instalar debe tener instalado Java como requisito, despues puede simplement
 ----
 ## Uso
 
-Revise la documentación en ![línea](https://brandonrodriguezc.github.io/testdesk-documentacion/)
+Revise la documentación en [línea](https://brandonrodriguezc.github.io/testdesk-documentacion/)
 
 ## Errores conocidos
 
@@ -33,7 +33,7 @@ Revise la documentación en ![línea](https://brandonrodriguezc.github.io/testde
     * java.util
 
 ### Sets de pruebas de ejecución
-Actualmente las pruebas más vitales para la ejecución están en [carpeta](https://github.com/BrandonRodriguezC/TestDesk/Pruebas)
+Actualmente las pruebas más vitales para la ejecución están en [carpeta](https://github.com/BrandonRodriguezC/TestDesk/tree/main/Pruebas)
 
 ----
 
