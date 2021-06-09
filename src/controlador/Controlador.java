@@ -82,6 +82,7 @@ public class Controlador {
 //				System.out.println(as.imprimirExpresionesPosfijas());
 				ej.setInfo(new ArrayList<String>());
 				ej.setInstrucciones(sc.secuenciar(this.tomarCodigo().replace("\t", "").split("\n"), as.getExpresionesPosfijas()));
+				
 				ej.setTS(as.getTablaDeSimbolos());
 				actualizarTablas();
 			}

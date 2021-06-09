@@ -148,6 +148,7 @@ public class Secuenciador {
 		NodoSecuenciador end = new NodoSecuenciador(count,  new ExpresionesLinea("end"), "", vec.length-1);
 		list.add(end);
 		ctrl.presentarErrores(textoLista(list), "sc");
+		System.out.println(textoLista(list));
 		return list;
 	}
 

@@ -12,7 +12,7 @@ public class Analizadores {
 	private static final String TEXTO = "\"([^\"\\\\]|\\\\.)*\"";
 	// private static final String TEXTO ="\".*\"";
 	private static final String PARENTESIS = "\\(|\\)";
-	private static final String OPERADOR = "\\^|\\/|\\*|\\+|\\-|\\%|\\=\\=|\\!\\=|\\>\\=|\\<\\=|\\<|\\>|\\!|\\&\\&|\\|\\|";
+	private static final String OPERADOR = "\\/|\\*|\\+|\\-|\\%|\\=\\=|\\!\\=|\\>\\=|\\<\\=|\\<|\\>|\\!|\\&\\&|\\|\\|";
 	private static final String ESPACIO = "\\s+";
 	private static final String COMA = "\\,";
 	private static final String IDENTIFICADOR = "[a-z]+([0-9]+)?";
