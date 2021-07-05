@@ -515,25 +515,34 @@ public class CodeArea extends StyledTextArea {
 				if (LineaActual.matches("((?!(entero|logico|real|texto)).)*")) {
 					// SI CONTIENE IDENTIFICADOR , AÑADIR ESPACIOS ANTES DEL IDENTIFICADOR Y EN EL
 					// IGUAL
-
+					
 					if (LineaActual.matches("(\t+)?(\s+)?([^\s]+)\s+\\=\s+.*\\;")) {
 						if (!LineaActual.matches("^(\t+)?\s+\\=.*")) {
 //							System.out.println("supone que deberia tener identificador para el cambio");
 							int tabs = (int) LineaEnEdicion.chars().filter(ch -> ch == '\t').count();
 							char[] tab = new char[tabs];
 							Arrays.fill(tab, '\t');
-
-							conEspacios = (new StringBuilder())
-									.append(conEspacios.replaceAll("^\t*(\s+)?", new String(tab) + "   ")
-											.replaceAll("\s+\\=\s+", "   =   "))
-									.toString();
+							if (LineaActual.contains("leer( );")) {
+								conEspacios = (new StringBuilder())
+										.append(conEspacios.replaceAll("^\t*(\s+)?", new String(tab) + "   ")
+												.replaceAll("\s+\\=\s+", "   = "))
+										.toString();
+							}else {
+								conEspacios = (new StringBuilder())
+										.append(conEspacios.replaceAll("^\t*(\s+)?", new String(tab) + "   ")
+												.replaceAll("\s+\\=\s+", "   =   "))
+										.toString();
+							}
 //							System.out.println("Si se reemplazó");
+							
 						}
+						
 					}
 
 					
-					if(!LineaActual.matches(".*\\=\s+\\;")) {
+					if(!LineaActual.matches(".*\\=\sleer\\(\s\\)\\;")  && !LineaActual.matches(".*\\=\s+\\;") && !LineaActual.matches("^\t*escribir\\(.*\\);")) {
 						conEspacios = conEspacios.replace(";", "   ;");
+						
 					}
 
 				}
@@ -590,17 +599,17 @@ public class CodeArea extends StyledTextArea {
 //		estructura = new ArrayList<>();
 
 //		estructura.add("################ ESTRUCTURA #################");
-		String linea = "";
+		String linea;
 		try {
 			linea = getContent().getLine(lineaActual);
 		} catch (Exception e) {
-			// TODO: handle exception
+			linea = "";
 		}
 
 		StringBuilder sb = new StringBuilder(linea);
 
 		if (linea.matches("(\t+)?(\s+)?.*(\s+)?\\=.*\\;")
-				&& linea.matches("((?!(entero|logico|real|texto|escribir)).)*")) {
+				&& linea.matches("((?!(entero|logico|real|texto|escribir|leer)).)*")) {
 
 //			estructura.add("ASIGNACION");
 
@@ -645,12 +654,16 @@ public class CodeArea extends StyledTextArea {
 
 			añadirRangoEscritura(getOffsetAtLine(lineaActual) + sb.indexOf("("),
 					getOffsetAtLine(lineaActual) + sb.indexOf(")"), 1);
-		} else if (linea.matches("(\t+)?(escribir|leer)(\\().*(\\))\\;")) {
-
+		} else if (linea.matches("(\t+)?(escribir)(\\().*(\\))\\;")) {
 //			estructura.add("METODO");
-
+		
 			añadirRangoEscritura(getOffsetAtLine(lineaActual) + sb.indexOf("("),
 					getOffsetAtLine(lineaActual) + sb.indexOf(")"), 1);
+		} else if (linea.matches("(\t+)?.*\\=\s+leer\\(\s\\)\\;")) {
+			
+			int tabs = (int) linea.chars().filter(ch -> ch == '\t').count();
+			añadirRangoEscritura(getOffsetAtLine(lineaActual) + tabs, getOffsetAtLine(lineaActual) + sb.indexOf("="),
+					1);
 		}
 	}
 

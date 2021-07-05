@@ -181,7 +181,7 @@ public class Ejecutor implements Evaluador, Posfijo {
 	public void asignacion(String identificador, String expresion) {
 		/** IMPRESION DEBUG **/
 		identificador = identificador.trim();
-		System.out.println("-------------------------------");
+//		System.out.println("-------------------------------");
 //		System.out.println(expresion);
 		Variable resultado = Evaluador.evaluar(expresion, ts, numeroDeLinea);
 		if (resultado.getValor().equals("X")) {
@@ -217,17 +217,23 @@ public class Ejecutor implements Evaluador, Posfijo {
 		} else {
 			String tipo = encontrarTipoParaIdentificador(identificadorLectura);
 			ArrayList<String> analizador = (new Analizadores()).analizador(true, false, tipo, lectura, numeroDeLinea);
-			Variable var = Evaluador.evaluar(Posfijo.postfija(analizador.toArray(new String[0])), null, numeroDeLinea);
-			String valor = Evaluador.convertirEnAlgoritmo(var.getValor(), tipo);
-			if (!valor.isEmpty()) {
-				asignacionLectura(identificadorLectura, var, lectura);
-				indiceDeInstruccion++;
-				esperando = false;
-				identificadorLectura = "";
+			if (analizador != null) {
+				Variable var = Evaluador.evaluar(Posfijo.postfija(analizador.toArray(new String[0])), null, numeroDeLinea);
+				String valor = Evaluador.convertirEnAlgoritmo(var.getValor(), tipo);
+				if (!valor.isEmpty()) {
+					asignacionLectura(identificadorLectura, var, lectura);
+					indiceDeInstruccion++;
+					esperando = false;
+					identificadorLectura = "";
+				} else {
+					info.add("EJECUCIÓN: ERROR L" + numeroDeLinea + "~ LECTURA: No se puede convertir el dato <" + lectura
+							+ "> al tipo de dato " + tipo);
+				}
 			} else {
 				info.add("EJECUCIÓN: ERROR L" + numeroDeLinea + "~ LECTURA: No se puede convertir el dato <" + lectura
 						+ "> al tipo de dato " + tipo);
 			}
+			
 		}
 	}
 
